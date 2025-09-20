@@ -17,6 +17,8 @@
     "next": "14.0.4",
     "postmark": "^3.11.0",
     "puppeteer": "^24.22.0",
+    "puppeteer-core": "^24.22.0",
+    "html-pdf-node": "^1.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "stripe": "^14.9.0",
