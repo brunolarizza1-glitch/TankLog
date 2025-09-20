@@ -25,10 +25,17 @@ export const sendEmail = async (params: {
   }
 
   // Use a verified domain for Postmark
-  // You may need to update this to match your verified domain in Postmark
-  const fromAddress = 'noreply@tanklog.app';
+  // Update this to match your verified domain in Postmark
+  const fromAddress = 'noreply@tanklog.co';
 
   try {
+    console.log('Sending email via Postmark:', {
+      from: fromAddress,
+      to: params.to,
+      subject: params.subject,
+      hasAttachments: !!params.attachments?.length
+    });
+
     const response = await postmark.sendEmail({
       From: fromAddress,
       To: params.to,
@@ -43,6 +50,7 @@ export const sendEmail = async (params: {
       })),
     });
 
+    console.log('Email sent successfully:', response);
     return response;
   } catch (error) {
     console.error('Failed to send email:', error);
