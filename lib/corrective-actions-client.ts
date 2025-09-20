@@ -30,6 +30,7 @@ export async function createCorrectiveAction(params: {
     description: string;
     requiredAction: string;
     assignedTo: string;
+    customSeverity: string;
   };
 }) {
   const response = await fetch('/api/corrective-actions', {

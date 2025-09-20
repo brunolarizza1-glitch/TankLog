@@ -32,7 +32,7 @@ export default function CorrectiveActionModal({
     description: '',
     requiredAction: '',
     assignedTo: currentTechnicianId || '',
-    customSeverity: '' as 'immediate' | '24hr' | '7day' | '',
+    customSeverity: '24hr' as 'immediate' | '24hr' | '7day',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +45,7 @@ export default function CorrectiveActionModal({
         description: formData.description,
         requiredAction: formData.requiredAction,
         assignedTo: formData.assignedTo || undefined,
-        customSeverity: formData.customSeverity || undefined,
+        customSeverity: formData.customSeverity,
       };
 
       const action = await createCorrectiveAction({
@@ -56,6 +56,7 @@ export default function CorrectiveActionModal({
           description: formData.description,
           requiredAction: formData.requiredAction,
           assignedTo: formData.assignedTo,
+          customSeverity: formData.customSeverity,
         },
       });
 
@@ -78,7 +79,7 @@ export default function CorrectiveActionModal({
       case '7day':
         return 'Must be fixed within 7 days';
       default:
-        return 'Severity will be determined automatically';
+        return 'Please select a severity level';
     }
   };
 
@@ -197,12 +198,12 @@ export default function CorrectiveActionModal({
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    customSeverity: e.target.value as any,
+                    customSeverity: e.target.value as 'immediate' | '24hr' | '7day',
                   }))
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                required
               >
-                <option value="">Auto-determine (recommended)</option>
                 <option value="immediate">Immediate (4 hours)</option>
                 <option value="24hr">24 Hours</option>
                 <option value="7day">7 Days</option>

@@ -66,7 +66,7 @@ export interface FailureDetails {
   description: string;
   requiredAction: string;
   assignedTo?: string;
-  customSeverity?: SeverityLevel;
+  customSeverity: SeverityLevel;
 }
 
 export interface CreateCorrectiveActionParams {
@@ -81,19 +81,6 @@ export interface MarkCompletedParams {
   photoEvidence?: string;
 }
 
-// Severity determination logic based on inspection item types
-const SEVERITY_RULES: Record<string, SeverityLevel> = {
-  leak_check: 'immediate', // Gas leaks are immediate safety hazards
-  pressure_test: 'immediate', // Pressure failures are immediate
-  safety_valve: 'immediate', // Safety equipment must work immediately
-  emergency_shutoff: 'immediate', // Emergency systems are critical
-  visual_inspection: '24hr', // Visual issues need prompt attention
-  gauge_calibration: '24hr', // Instrumentation issues
-  hose_inspection: '24hr', // Equipment condition issues
-  documentation: '7day', // Administrative issues
-  labeling: '7day', // Non-critical labeling issues
-  maintenance_log: '7day', // Record keeping issues
-};
 
 // Due date calculation based on severity
 const SEVERITY_DURATIONS: Record<SeverityLevel, number> = {
@@ -124,10 +111,12 @@ export class CorrectiveActionService {
         throw new NotFoundError('Inspection');
       }
 
-      // Determine severity level
-      const severityLevel =
-        failureDetails.customSeverity ||
-        this.determineSeverity(failureDetails.itemId);
+      // Use client-selected severity level
+      const severityLevel = failureDetails.customSeverity;
+
+      if (!severityLevel) {
+        throw new ValidationError('Severity level is required');
+      }
 
       // Calculate due date
       const dueDate = this.calculateDueDate(severityLevel);
@@ -379,12 +368,6 @@ export class CorrectiveActionService {
 
   // Private helper methods
 
-  /**
-   * Determines severity level based on inspection item type
-   */
-  private determineSeverity(itemId: string): SeverityLevel {
-    return SEVERITY_RULES[itemId] || '24hr'; // Default to 24hr if not found
-  }
 
   /**
    * Calculates due date based on severity level
