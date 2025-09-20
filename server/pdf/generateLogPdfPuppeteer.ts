@@ -255,6 +255,7 @@ async function generateSignedUrl(storagePath: string): Promise<string> {
 export async function generateLogPdfPuppeteer(
   logId: string
 ): Promise<PdfResult> {
+  console.log('generateLogPdfPuppeteer called for logId:', logId);
   try {
     const pdfData = await loadLogPdfData(logId);
     const filename = generateFilename(pdfData);
@@ -312,9 +313,9 @@ export async function generateLogPdfPuppeteer(
       userEmail: pdfData.profile.email,
       hasCustomerEmail: !!pdfData.log.customer_email,
       customerEmail: pdfData.log.customer_email,
-      logId: pdfData.log.id
+      logId: pdfData.log.id,
     });
-    
+
     // Send email to the user who created the log
     if (pdfData.profile.email) {
       try {

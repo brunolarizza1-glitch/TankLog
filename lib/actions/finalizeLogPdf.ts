@@ -14,6 +14,7 @@ export interface FinalizePdfResult {
 export async function finalizeLogPdf(
   logId: string
 ): Promise<FinalizePdfResult> {
+  console.log('finalizeLogPdf called for logId:', logId);
   try {
     const supabase = createClient();
     const {

@@ -97,9 +97,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate PDF asynchronously (don't wait for it)
-    finalizeLogPdf(log.id).catch((error) => {
-      console.error('Failed to generate PDF for log:', log.id, error);
-    });
+    console.log('Starting PDF generation for log:', log.id);
+    finalizeLogPdf(log.id)
+      .then((result) => {
+        console.log('PDF generation completed:', result);
+      })
+      .catch((error) => {
+        console.error('Failed to generate PDF for log:', log.id, error);
+      });
 
     return NextResponse.json({
       success: true,

@@ -33,7 +33,7 @@ export const sendEmail = async (params: {
       from: fromAddress,
       to: params.to,
       subject: params.subject,
-      hasAttachments: !!params.attachments?.length
+      hasAttachments: !!params.attachments?.length,
     });
 
     const response = await postmark.sendEmail({
