@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const filePath = `${profile.org_id}/${year}/${month}/${logId}/${fileName}`;
 
     // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('log-photos')
       .upload(filePath, file, {
         cacheControl: '3600',

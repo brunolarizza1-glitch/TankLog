@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { useComplianceMode } from '@/lib/hooks/useComplianceMode';
+// import { useComplianceMode } from '@/lib/hooks/useComplianceMode';
 
 interface CompressedPhoto {
   id: string;

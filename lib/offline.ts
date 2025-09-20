@@ -1,7 +1,8 @@
 // Offline storage utilities for TankLog
 
 // Check if we're in a browser environment
-const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+const isBrowser =
+  typeof window !== 'undefined' && typeof localStorage !== 'undefined';
 
 export interface DraftLog {
   id: string;
@@ -75,7 +76,7 @@ const safeLocalStorage = {
     } catch {
       return null;
     }
-  }
+  },
 };
 
 // Draft management
@@ -84,7 +85,7 @@ export function saveDraft(
   draft: Omit<DraftLog, 'id' | 'createdAt' | 'updatedAt'>
 ): void {
   if (!isBrowser) return;
-  
+
   try {
     const draftWithMeta: DraftLog = {
       ...draft,
@@ -104,7 +105,7 @@ export function saveDraft(
 
 export function loadDraft(userId: string): DraftLog | null {
   if (!isBrowser) return null;
-  
+
   try {
     const stored = safeLocalStorage.getItem(`${DRAFT_KEY_PREFIX}${userId}`);
     if (!stored) return null;
@@ -129,7 +130,7 @@ export function loadDraft(userId: string): DraftLog | null {
 
 export function clearDraft(userId: string): void {
   if (!isBrowser) return;
-  
+
   try {
     safeLocalStorage.removeItem(`${DRAFT_KEY_PREFIX}${userId}`);
   } catch (error) {
@@ -144,7 +145,7 @@ export function queueLogSubmission(
   if (!isBrowser) {
     throw new Error('Cannot queue submission in server environment');
   }
-  
+
   try {
     const queuedLog: QueuedLog = {
       ...log,
@@ -167,7 +168,7 @@ export function queueLogSubmission(
 
 export function loadQueuedSubmissions(): QueuedLog[] {
   if (!isBrowser) return [];
-  
+
   try {
     const queuedLogs: QueuedLog[] = [];
 
@@ -194,7 +195,7 @@ export function loadQueuedSubmissions(): QueuedLog[] {
 
 export function removeQueuedSubmission(logId: string): void {
   if (!isBrowser) return;
-  
+
   try {
     safeLocalStorage.removeItem(`${QUEUE_KEY_PREFIX}${logId}`);
   } catch (error) {
@@ -209,7 +210,7 @@ export function saveUserPreference(
   value: string
 ): void {
   if (!isBrowser) return;
-  
+
   try {
     safeLocalStorage.setItem(`pref:${userId}:${key}`, value);
   } catch (error) {
@@ -219,7 +220,7 @@ export function saveUserPreference(
 
 export function loadUserPreference(userId: string, key: string): string | null {
   if (!isBrowser) return null;
-  
+
   try {
     return safeLocalStorage.getItem(`pref:${userId}:${key}`);
   } catch (error) {
@@ -259,24 +260,24 @@ export function onNetworkChange(
 // Hook for React components
 export function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(true);
-  
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     setIsOnline(navigator.onLine);
-    
+
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-    
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
-  
+
   return { isOnline };
 }
 
