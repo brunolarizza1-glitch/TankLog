@@ -103,23 +103,23 @@ export default function DashboardPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <p className="text-2xl font-bold text-brand-dark">
+          <div className="card p-4">
+            <p className="heading-2 text-gray-700">
               {stats.totalLogs}
             </p>
-            <p className="text-sm text-gray-600">Total Logs</p>
+            <p className="text-sm text-gray-500">Total Logs</p>
           </div>
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <p className="text-2xl font-bold text-brand-dark">
+          <div className="card p-4">
+            <p className="heading-2 text-gray-700">
               {stats.thisMonth}
             </p>
-            <p className="text-sm text-gray-600">This Month</p>
+            <p className="text-sm text-gray-500">This Month</p>
           </div>
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <p className="text-2xl font-bold text-red-600">
+          <div className="card p-4">
+            <p className="heading-2 text-danger">
               {stats.pendingIssues}
             </p>
-            <p className="text-sm text-gray-600">Issues</p>
+            <p className="text-sm text-gray-500">Issues</p>
           </div>
         </div>
 
@@ -127,22 +127,22 @@ export default function DashboardPage() {
         <div className="space-y-4">
           <Link
             href="/logs/new"
-            className="block w-full bg-primary text-white py-4 px-6 rounded-xl text-lg font-semibold text-center hover:bg-blue-700 transition-colors"
+            className="btn btn-primary btn-lg w-full text-center"
           >
             New Log Entry
           </Link>
 
           <Link
             href="/logs"
-            className="block w-full bg-gray-100 text-gray-700 py-4 px-6 rounded-xl text-lg font-semibold text-center hover:bg-gray-200 transition-colors"
+            className="btn btn-outline btn-lg w-full text-center"
           >
             View All Logs
           </Link>
         </div>
 
         {/* Recent Logs Preview */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <h3 className="text-lg font-semibold text-brand-dark mb-4">
+        <div className="card p-4">
+          <h3 className="heading-4 text-gray-700 mb-4">
             Recent Logs
           </h3>
           {logsLoading ? (
@@ -167,17 +167,17 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center space-x-2">
                     {log.leak_check === false && (
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                      <span className="badge badge-danger">
                         Leak Issue
                       </span>
                     )}
                     {log.visual_ok === false && (
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <span className="badge badge-warning">
                         Visual Issue
                       </span>
                     )}
                     {log.leak_check !== false && log.visual_ok !== false && (
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <span className="badge badge-success">
                         OK
                       </span>
                     )}

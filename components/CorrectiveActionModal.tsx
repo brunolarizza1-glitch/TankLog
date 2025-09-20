@@ -148,7 +148,7 @@ export default function CorrectiveActionModal({
                 placeholder="Describe what failed and why"
                 rows={3}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="input input-md w-full"
               />
             </div>
 
@@ -167,7 +167,7 @@ export default function CorrectiveActionModal({
                 placeholder="Describe what needs to be done to fix this issue"
                 rows={3}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="input input-md w-full"
               />
             </div>
 
@@ -185,7 +185,7 @@ export default function CorrectiveActionModal({
                   }))
                 }
                 placeholder="Technician ID or name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="input input-md w-full"
               />
             </div>
 
@@ -201,7 +201,7 @@ export default function CorrectiveActionModal({
                     customSeverity: e.target.value as 'immediate' | '24hr' | '7day',
                   }))
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="input input-md w-full"
                 required
               >
                 <option value="immediate">Immediate (4 hours)</option>
@@ -217,7 +217,7 @@ export default function CorrectiveActionModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                className="btn btn-outline btn-md flex-1"
               >
                 Cancel
               </button>
@@ -228,7 +228,7 @@ export default function CorrectiveActionModal({
                   !formData.description ||
                   !formData.requiredAction
                 }
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn btn-primary btn-md flex-1"
               >
                 {isSubmitting ? 'Creating...' : 'Create Corrective Action'}
               </button>
