@@ -10,17 +10,20 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createClient();
+    const redirectUrl = `${process.env.APP_URL}/auth/callback`;
+    console.log('Sending magic link to:', email, 'with redirect:', redirectUrl);
+    
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${process.env.APP_URL}/auth/callback`,
+        emailRedirectTo: redirectUrl,
       },
     });
 
     if (error) {
       console.error('Magic link error:', error);
       return NextResponse.json(
-        { error: 'Failed to send magic link' },
+        { error: 'Failed to send magic link', details: error.message },
         { status: 500 }
       );
     }

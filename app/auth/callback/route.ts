@@ -7,9 +7,24 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get('code');
   const redirectTo = searchParams.get('redirect_to') ?? '/';
 
+  console.log('Auth callback received:', { 
+    code: !!code, 
+    origin, 
+    redirectTo,
+    hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    hasSupabaseKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    appUrl: process.env.APP_URL
+  });
+
   if (code) {
     const supabase = createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    
+    console.log('Auth exchange result:', { 
+      hasUser: !!data?.user, 
+      hasError: !!error,
+      errorMessage: error?.message 
+    });
 
     if (!error && data.user) {
       try {
@@ -51,13 +66,20 @@ export async function GET(request: NextRequest) {
           }
         }
 
+        console.log('Authentication successful, redirecting to:', `${origin}${redirectTo}`);
         return NextResponse.redirect(`${origin}${redirectTo}`);
       } catch (error) {
+        console.error('Profile bootstrap error:', error);
         return NextResponse.redirect(`${origin}/signin?error=bootstrap_error`);
       }
+    } else {
+      console.error('Auth exchange failed:', error);
     }
+  } else {
+    console.log('No code provided in callback');
   }
 
   // Return the user to an error page with instructions
+  console.log('Redirecting to error page:', `${origin}/signin?error=auth_error`);
   return NextResponse.redirect(`${origin}/signin?error=auth_error`);
 }
