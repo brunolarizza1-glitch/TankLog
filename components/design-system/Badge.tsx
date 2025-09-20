@@ -9,14 +9,12 @@ interface BadgeProps {
 export const Badge: React.FC<BadgeProps> = ({
   children,
   variant = 'gray',
-  className = ''
+  className = '',
 }) => {
   const variantClasses = `badge-${variant}`;
-  
+
   return (
-    <span className={`badge ${variantClasses} ${className}`}>
-      {children}
-    </span>
+    <span className={`badge ${variantClasses} ${className}`}>{children}</span>
   );
 };
 

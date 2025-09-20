@@ -547,3 +547,23 @@
     transform: translateY(0);
   }
 }
+
+/* Mobile bottom navigation spacing */
+.pb-18 {
+  padding-bottom: 4.5rem; /* 72px */
+}
+
+/* Ensure content doesn't get hidden behind bottom nav */
+@media (max-width: 767px) {
+  .min-h-screen {
+    min-height: calc(100vh - 4.5rem);
+  }
+}
+
+/* Mobile navigation touch targets */
+@media (max-width: 767px) {
+  .nav-item {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

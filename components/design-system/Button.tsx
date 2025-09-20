@@ -1,7 +1,14 @@
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'accent' | 'success' | 'warning' | 'danger' | 'outline' | 'ghost';
+  variant?:
+    | 'primary'
+    | 'accent'
+    | 'success'
+    | 'warning'
+    | 'danger'
+    | 'outline'
+    | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
   className?: string;
@@ -17,7 +24,7 @@ export const Button: React.FC<ButtonProps> = ({
   const baseClasses = 'btn';
   const variantClasses = `btn-${variant}`;
   const sizeClasses = `btn-${size}`;
-  
+
   return (
     <button
       className={`${baseClasses} ${variantClasses} ${sizeClasses} ${className}`}

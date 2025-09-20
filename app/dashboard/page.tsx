@@ -81,7 +81,12 @@ export default function DashboardPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell
+      title="Dashboard"
+      breadcrumbs={[
+        { label: 'Dashboard' }
+      ]}
+    >
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -104,21 +109,15 @@ export default function DashboardPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-3 gap-4">
           <div className="card p-4">
-            <p className="heading-2 text-gray-700">
-              {stats.totalLogs}
-            </p>
+            <p className="heading-2 text-gray-700">{stats.totalLogs}</p>
             <p className="text-sm text-gray-500">Total Logs</p>
           </div>
           <div className="card p-4">
-            <p className="heading-2 text-gray-700">
-              {stats.thisMonth}
-            </p>
+            <p className="heading-2 text-gray-700">{stats.thisMonth}</p>
             <p className="text-sm text-gray-500">This Month</p>
           </div>
           <div className="card p-4">
-            <p className="heading-2 text-danger">
-              {stats.pendingIssues}
-            </p>
+            <p className="heading-2 text-danger">{stats.pendingIssues}</p>
             <p className="text-sm text-gray-500">Issues</p>
           </div>
         </div>
@@ -142,9 +141,7 @@ export default function DashboardPage() {
 
         {/* Recent Logs Preview */}
         <div className="card p-4">
-          <h3 className="heading-4 text-gray-700 mb-4">
-            Recent Logs
-          </h3>
+          <h3 className="heading-4 text-gray-700 mb-4">Recent Logs</h3>
           {logsLoading ? (
             <div className="text-center py-8 text-gray-500">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2"></div>
@@ -167,19 +164,13 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center space-x-2">
                     {log.leak_check === false && (
-                      <span className="badge badge-danger">
-                        Leak Issue
-                      </span>
+                      <span className="badge badge-danger">Leak Issue</span>
                     )}
                     {log.visual_ok === false && (
-                      <span className="badge badge-warning">
-                        Visual Issue
-                      </span>
+                      <span className="badge badge-warning">Visual Issue</span>
                     )}
                     {log.leak_check !== false && log.visual_ok !== false && (
-                      <span className="badge badge-success">
-                        OK
-                      </span>
+                      <span className="badge badge-success">OK</span>
                     )}
                   </div>
                 </div>

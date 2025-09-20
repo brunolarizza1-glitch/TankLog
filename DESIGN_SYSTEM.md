@@ -5,6 +5,7 @@ A comprehensive design system for the TankLog propane compliance application, bu
 ## 🎨 Color Palette
 
 ### Primary Colors
+
 - **Primary Blue**: `#1e40af` - Main brand color for primary actions
 - **Accent Gold**: `#f59e0b` - Secondary brand color for highlights
 - **Success Green**: `#059669` - Success states and positive actions
@@ -12,6 +13,7 @@ A comprehensive design system for the TankLog propane compliance application, bu
 - **Danger Red**: `#dc2626` - Error states and critical actions
 
 ### Neutral Colors
+
 - **Gray 50**: `#f8fafc` - Light backgrounds
 - **Gray 200**: `#e2e8f0` - Borders and dividers
 - **Gray 500**: `#64748b` - Secondary text
@@ -20,10 +22,12 @@ A comprehensive design system for the TankLog propane compliance application, bu
 ## 📝 Typography
 
 ### Font Family
+
 - **Primary**: Inter (Google Fonts)
 - **Fallback**: system-ui, sans-serif
 
 ### Font Scale
+
 - **Heading 1**: 32px / 1.2 line height / Bold
 - **Heading 2**: 24px / 1.2 line height / Semibold
 - **Heading 3**: 20px / 1.2 line height / Semibold
@@ -33,6 +37,7 @@ A comprehensive design system for the TankLog propane compliance application, bu
 - **Body**: 16px / 1.5 line height / Normal
 
 ### Font Weights
+
 - **Normal**: 400
 - **Medium**: 500
 - **Semibold**: 600
@@ -41,6 +46,7 @@ A comprehensive design system for the TankLog propane compliance application, bu
 ## 📏 Spacing Scale
 
 Based on 4px grid system:
+
 - **1**: 4px
 - **2**: 8px
 - **3**: 12px
@@ -63,10 +69,12 @@ Based on 4px grid system:
 ## 🎯 Component Heights
 
 ### Mobile (default)
+
 - **Button**: 44px
 - **Input**: 48px
 
 ### Desktop (768px+)
+
 - **Button**: 40px
 - **Input**: 44px
 
@@ -132,26 +140,31 @@ Based on 4px grid system:
 ## 📱 Responsive Design
 
 ### Breakpoints
+
 - **Mobile**: Default (0px+)
 - **Desktop**: 768px+
 
 ### Responsive Classes
+
 - `.mobile-hidden` - Hidden on mobile
 - `.desktop-hidden` - Hidden on desktop
 
 ## 🎨 Utility Classes
 
 ### Typography
+
 - `.text-xs`, `.text-sm`, `.text-base`, `.text-lg`, `.text-xl`, `.text-2xl`, `.text-3xl`
 - `.font-normal`, `.font-medium`, `.font-semibold`, `.font-bold`
 - `.heading-1` through `.heading-6`
 
 ### Colors
+
 - `.text-primary`, `.text-accent`, `.text-success`, `.text-warning`, `.text-danger`
 - `.bg-primary`, `.bg-accent`, `.bg-success`, `.bg-warning`, `.bg-danger`
 - `.border-primary`, `.border-accent`, `.border-success`, `.border-warning`, `.border-danger`
 
 ### Spacing
+
 - `.p-1` through `.p-12` (padding)
 - `.px-1` through `.px-8` (horizontal padding)
 - `.py-1` through `.py-8` (vertical padding)
@@ -160,6 +173,7 @@ Based on 4px grid system:
 - `.my-1` through `.my-8` (vertical margin)
 
 ### Layout
+
 - `.flex`, `.flex-col`, `.flex-row`
 - `.items-center`, `.items-start`, `.items-end`
 - `.justify-center`, `.justify-start`, `.justify-end`, `.justify-between`
@@ -168,49 +182,54 @@ Based on 4px grid system:
 ## 🚀 Usage Examples
 
 ### Button
+
 ```jsx
 import { Button } from '@/components/design-system';
 
 <Button variant="primary" size="md">
   Create Action
-</Button>
+</Button>;
 ```
 
 ### Input
+
 ```jsx
 import { Input } from '@/components/design-system';
 
-<Input 
+<Input
   label="Email Address"
   placeholder="Enter your email"
   error="Email is required"
   size="md"
-/>
+/>;
 ```
 
 ### Card
+
 ```jsx
 import { Card } from '@/components/design-system';
 
 <Card header={<h3>Card Title</h3>} footer={<Button>Action</Button>}>
   <p>Card content goes here</p>
-</Card>
+</Card>;
 ```
 
 ### Alert
+
 ```jsx
 import { Alert } from '@/components/design-system';
 
 <Alert type="success" onClose={() => setShow(false)}>
   Action completed successfully!
-</Alert>
+</Alert>;
 ```
 
 ### Badge
+
 ```jsx
 import { Badge } from '@/components/design-system';
 
-<Badge variant="success">Completed</Badge>
+<Badge variant="success">Completed</Badge>;
 ```
 
 ## 🎯 CSS Custom Properties
@@ -228,7 +247,7 @@ All design tokens are available as CSS custom properties:
   --gray-200: #e2e8f0;
   --gray-500: #64748b;
   --gray-700: #334155;
-  
+
   --font-family: 'Inter', system-ui, sans-serif;
   --text-xs: 12px;
   --text-sm: 14px;
@@ -237,7 +256,7 @@ All design tokens are available as CSS custom properties:
   --text-xl: 20px;
   --text-2xl: 24px;
   --text-3xl: 32px;
-  
+
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -245,11 +264,11 @@ All design tokens are available as CSS custom properties:
   --space-6: 24px;
   --space-8: 32px;
   --space-12: 48px;
-  
+
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
-  
+
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 }
@@ -258,6 +277,7 @@ All design tokens are available as CSS custom properties:
 ## 🔧 Implementation
 
 The design system is implemented in:
+
 - `/styles/design-system.css` - Core CSS with custom properties and utility classes
 - `/components/design-system/` - React components using the design system
 - `/app/globals.css` - Imports the design system
@@ -275,6 +295,7 @@ The design system is implemented in:
 ## 🎨 Design Tokens
 
 All design tokens are centralized in the CSS custom properties, making it easy to:
+
 - Update colors globally
 - Maintain consistency
 - Support theming

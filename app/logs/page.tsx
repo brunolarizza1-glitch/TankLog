@@ -37,7 +37,12 @@ export default function LogsPage() {
 
   if (!user) {
     return (
-      <AppShell>
+      <AppShell
+        title="Inspections"
+        breadcrumbs={[
+          { label: 'Inspections' }
+        ]}
+      >
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -47,7 +52,12 @@ export default function LogsPage() {
 
   if (loading) {
     return (
-      <AppShell>
+      <AppShell
+        title="Inspections"
+        breadcrumbs={[
+          { label: 'Inspections' }
+        ]}
+      >
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -56,7 +66,12 @@ export default function LogsPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell
+      title="Inspections"
+      breadcrumbs={[
+        { label: 'Inspections' }
+      ]}
+    >
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

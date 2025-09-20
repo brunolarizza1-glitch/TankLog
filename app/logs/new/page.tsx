@@ -327,7 +327,13 @@ export default function NewLogPage() {
 
   if (!user) {
     return (
-      <AppShell>
+      <AppShell
+        title="New Inspection"
+        breadcrumbs={[
+          { label: 'Inspections', href: '/logs' },
+          { label: 'New Inspection' }
+        ]}
+      >
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -337,7 +343,13 @@ export default function NewLogPage() {
 
   if (complianceLoading) {
     return (
-      <AppShell>
+      <AppShell
+        title="New Inspection"
+        breadcrumbs={[
+          { label: 'Inspections', href: '/logs' },
+          { label: 'New Inspection' }
+        ]}
+      >
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -346,7 +358,13 @@ export default function NewLogPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell
+      title="New Inspection"
+      breadcrumbs={[
+        { label: 'Inspections', href: '/logs' },
+        { label: 'New Inspection' }
+      ]}
+    >
       <div className="min-h-screen pb-20">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 z-10">

@@ -13,30 +13,20 @@ export const Card: React.FC<CardProps> = ({
   className = '',
   header,
   footer,
-  padding = 'md'
+  padding = 'md',
 }) => {
   const paddingClasses = {
     none: '',
     sm: 'p-3',
     md: 'p-6',
-    lg: 'p-8'
+    lg: 'p-8',
   };
 
   return (
     <div className={`card ${className}`}>
-      {header && (
-        <div className="card-header">
-          {header}
-        </div>
-      )}
-      <div className={`card-body ${paddingClasses[padding]}`}>
-        {children}
-      </div>
-      {footer && (
-        <div className="card-footer">
-          {footer}
-        </div>
-      )}
+      {header && <div className="card-header">{header}</div>}
+      <div className={`card-body ${paddingClasses[padding]}`}>{children}</div>
+      {footer && <div className="card-footer">{footer}</div>}
     </div>
   );
 };

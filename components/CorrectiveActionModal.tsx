@@ -198,7 +198,10 @@ export default function CorrectiveActionModal({
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    customSeverity: e.target.value as 'immediate' | '24hr' | '7day',
+                    customSeverity: e.target.value as
+                      | 'immediate'
+                      | '24hr'
+                      | '7day',
                   }))
                 }
                 className="input input-md w-full"
