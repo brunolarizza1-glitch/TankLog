@@ -1,5 +1,8 @@
 // Offline storage utilities for TankLog
 
+// Check if we're in a browser environment
+const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+
 export interface DraftLog {
   id: string;
   fields: {
@@ -38,11 +41,50 @@ export interface QueuedLog {
 const DRAFT_KEY_PREFIX = 'draft:new-log:';
 const QUEUE_KEY_PREFIX = 'queue:submit-log:';
 
+// Safe localStorage wrapper
+const safeLocalStorage = {
+  getItem: (key: string): string | null => {
+    if (!isBrowser) return null;
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  setItem: (key: string, value: string): void => {
+    if (!isBrowser) return;
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // Silently fail
+    }
+  },
+  removeItem: (key: string): void => {
+    if (!isBrowser) return;
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // Silently fail
+    }
+  },
+  length: isBrowser ? localStorage.length : 0,
+  key: (index: number): string | null => {
+    if (!isBrowser) return null;
+    try {
+      return localStorage.key(index);
+    } catch {
+      return null;
+    }
+  }
+};
+
 // Draft management
 export function saveDraft(
   userId: string,
   draft: Omit<DraftLog, 'id' | 'createdAt' | 'updatedAt'>
 ): void {
+  if (!isBrowser) return;
+  
   try {
     const draftWithMeta: DraftLog = {
       ...draft,
@@ -51,7 +93,7 @@ export function saveDraft(
       updatedAt: new Date().toISOString(),
     };
 
-    localStorage.setItem(
+    safeLocalStorage.setItem(
       `${DRAFT_KEY_PREFIX}${userId}`,
       JSON.stringify(draftWithMeta)
     );
@@ -61,8 +103,10 @@ export function saveDraft(
 }
 
 export function loadDraft(userId: string): DraftLog | null {
+  if (!isBrowser) return null;
+  
   try {
-    const stored = localStorage.getItem(`${DRAFT_KEY_PREFIX}${userId}`);
+    const stored = safeLocalStorage.getItem(`${DRAFT_KEY_PREFIX}${userId}`);
     if (!stored) return null;
 
     const draft = JSON.parse(stored) as DraftLog;
@@ -84,8 +128,10 @@ export function loadDraft(userId: string): DraftLog | null {
 }
 
 export function clearDraft(userId: string): void {
+  if (!isBrowser) return;
+  
   try {
-    localStorage.removeItem(`${DRAFT_KEY_PREFIX}${userId}`);
+    safeLocalStorage.removeItem(`${DRAFT_KEY_PREFIX}${userId}`);
   } catch (error) {
     console.error('Failed to clear draft:', error);
   }
@@ -95,6 +141,10 @@ export function clearDraft(userId: string): void {
 export function queueLogSubmission(
   log: Omit<QueuedLog, 'id' | 'createdAt' | 'retryCount'>
 ): string {
+  if (!isBrowser) {
+    throw new Error('Cannot queue submission in server environment');
+  }
+  
   try {
     const queuedLog: QueuedLog = {
       ...log,
@@ -103,7 +153,7 @@ export function queueLogSubmission(
       retryCount: 0,
     };
 
-    localStorage.setItem(
+    safeLocalStorage.setItem(
       `${QUEUE_KEY_PREFIX}${queuedLog.id}`,
       JSON.stringify(queuedLog)
     );
@@ -116,13 +166,15 @@ export function queueLogSubmission(
 }
 
 export function loadQueuedSubmissions(): QueuedLog[] {
+  if (!isBrowser) return [];
+  
   try {
     const queuedLogs: QueuedLog[] = [];
 
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
+    for (let i = 0; i < safeLocalStorage.length; i++) {
+      const key = safeLocalStorage.key(i);
       if (key?.startsWith(QUEUE_KEY_PREFIX)) {
-        const stored = localStorage.getItem(key);
+        const stored = safeLocalStorage.getItem(key);
         if (stored) {
           const queuedLog = JSON.parse(stored) as QueuedLog;
           queuedLogs.push(queuedLog);
@@ -141,8 +193,10 @@ export function loadQueuedSubmissions(): QueuedLog[] {
 }
 
 export function removeQueuedSubmission(logId: string): void {
+  if (!isBrowser) return;
+  
   try {
-    localStorage.removeItem(`${QUEUE_KEY_PREFIX}${logId}`);
+    safeLocalStorage.removeItem(`${QUEUE_KEY_PREFIX}${logId}`);
   } catch (error) {
     console.error('Failed to remove queued submission:', error);
   }
@@ -154,16 +208,20 @@ export function saveUserPreference(
   key: string,
   value: string
 ): void {
+  if (!isBrowser) return;
+  
   try {
-    localStorage.setItem(`pref:${userId}:${key}`, value);
+    safeLocalStorage.setItem(`pref:${userId}:${key}`, value);
   } catch (error) {
     console.error('Failed to save user preference:', error);
   }
 }
 
 export function loadUserPreference(userId: string, key: string): string | null {
+  if (!isBrowser) return null;
+  
   try {
-    return localStorage.getItem(`pref:${userId}:${key}`);
+    return safeLocalStorage.getItem(`pref:${userId}:${key}`);
   } catch (error) {
     console.error('Failed to load user preference:', error);
     return null;
@@ -197,3 +255,30 @@ export function onNetworkChange(
     window.removeEventListener('offline', handleOffline);
   };
 }
+
+// Hook for React components
+export function useOnlineStatus() {
+  const [isOnline, setIsOnline] = useState(true);
+  
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    setIsOnline(navigator.onLine);
+    
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+  
+  return { isOnline };
+}
+
+// Import React hooks for the online status hook
+import { useState, useEffect } from 'react';
