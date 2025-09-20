@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Auth Debug</title>
+  </head>
+  <body>
+    <h1>Auth Debug Test</h1>
+    <button onclick="testGoogleAuth()">Test Google Auth</button>
+    <div id="result"></div>
+
+    <script>
+      async function testGoogleAuth() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = 'Testing...';
+
+        try {
+          // Test the Google OAuth endpoint
+          const response = await fetch('/api/auth/google', {
+            method: 'GET',
+            redirect: 'manual', // Don't follow redirects
+          });
+
+          console.log('Response status:', response.status);
+          console.log('Response headers:', [...response.headers.entries()]);
+
+          if (response.status === 307) {
+            const location = response.headers.get('location');
+            resultDiv.innerHTML = `
+                        <h3>✅ OAuth redirect working</h3>
+                        <p><strong>Redirect URL:</strong></p>
+                        <p style="word-break: break-all; background: #f0f0f0; padding: 10px;">${location}</p>
+                        <p><a href="${location}" target="_blank">Click here to test Google OAuth</a></p>
+                    `;
+          } else {
+            resultDiv.innerHTML = `<h3>❌ Unexpected response: ${response.status}</h3>`;
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `<h3>❌ Error: ${error.message}</h3>`;
+        }
+      }
+    </script>
+  </body>
+</html>
+
+
+
+

@@ -1,0 +1,360 @@
+import puppeteer from 'puppeteer';
+import { createAdminClient } from '@/lib/supabase/server';
+import { db } from '@/server/db';
+import { sendLogPdfEmail } from '@/lib/postmark';
+
+interface PdfResult {
+  pdfUrl: string;
+  storagePath: string;
+  filename: string;
+}
+
+async function loadLogPdfData(logId: string) {
+  const log = await db.getLog(logId);
+  if (!log) {
+    throw new Error('Log not found');
+  }
+
+  const organization = await db.getOrganization(log.org_id);
+  if (!organization) {
+    throw new Error('Organization not found');
+  }
+
+  const profile = await db.getProfile(log.user_id);
+  if (!profile) {
+    throw new Error('Profile not found');
+  }
+
+  return { log, organization, profile };
+}
+
+function generateFilename(pdfData: any): string {
+  const date = new Date(pdfData.log.occurred_at);
+  const dateStr = date.toISOString().split('T')[0];
+  const site = pdfData.log.site.replace(/[^a-zA-Z0-9]/g, '_');
+  return `tanklog_${site}_${dateStr}_${pdfData.log.id.slice(0, 8)}.pdf`;
+}
+
+function generateHtml(logData: any, organization: any, profile: any): string {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const formatBoolean = (value: boolean) => (value ? 'Yes' : 'No');
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>TankLog Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    .logo-section {
+      display: flex;
+      align-items: center;
+    }
+    .logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+    }
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1f2937;
+    }
+    .header-info {
+      text-align: right;
+    }
+    .org-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: #374151;
+      margin-bottom: 4px;
+    }
+    .date {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .content {
+      display: flex;
+      gap: 20px;
+    }
+    .left-column, .right-column {
+      flex: 1;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #1f2937;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 5px;
+    }
+    .field {
+      display: flex;
+      margin-bottom: 8px;
+    }
+    .field-label {
+      font-weight: bold;
+      width: 120px;
+      color: #374151;
+    }
+    .field-value {
+      flex: 1;
+      color: #6b7280;
+    }
+    .notes {
+      background: #f9fafb;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo-section">
+      <img src="file://${process.cwd()}/public/brand/logo-horizontal.jpeg" class="logo" alt="TankLog">
+    </div>
+    <div class="header-info">
+      <div class="org-name">${organization.name}</div>
+      <div class="date">${formatDate(logData.occurred_at)}</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="left-column">
+      <div class="section">
+        <div class="section-title">Log Details</div>
+        <div class="field">
+          <div class="field-label">Site:</div>
+          <div class="field-value">${logData.site || 'N/A'}</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Vehicle:</div>
+          <div class="field-value">${logData.vehicle_id || 'N/A'}</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Tank ID:</div>
+          <div class="field-value">${logData.tank_id || 'N/A'}</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Pressure:</div>
+          <div class="field-value">${logData.pressure ? `${logData.pressure} PSI` : 'N/A'}</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Inspections</div>
+        <div class="field">
+          <div class="field-label">Leak Check:</div>
+          <div class="field-value">${formatBoolean(logData.leak_check)}</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Visual OK:</div>
+          <div class="field-value">${formatBoolean(logData.visual_ok)}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-column">
+      <div class="section">
+        <div class="section-title">Compliance</div>
+        <div class="field">
+          <div class="field-label">Mode:</div>
+          <div class="field-value">${logData.compliance_mode === 'US_NFPA58' ? 'US NFPA 58' : 'CA TSSA'}</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Inspector:</div>
+          <div class="field-value">${profile.full_name || 'N/A'}</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Initials:</div>
+          <div class="field-value">${logData.initials || 'N/A'}</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Date:</div>
+          <div class="field-value">${formatDate(logData.occurred_at)}</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Notes</div>
+        <div class="notes">${logData.notes || 'No notes provided'}</div>
+      </div>
+
+      ${
+        logData.corrective_action
+          ? `
+      <div class="section">
+        <div class="section-title">Corrective Action</div>
+        <div class="notes">${logData.corrective_action}</div>
+      </div>
+      `
+          : ''
+      }
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>Generated by TankLog - Professional Tank Inspection Management</div>
+    <div>Data Hash: ${logData.id.slice(0, 16)}</div>
+  </div>
+</body>
+</html>
+  `;
+}
+
+async function generateSignedUrl(storagePath: string): Promise<string> {
+  const supabase = createAdminClient();
+  const { data } = await supabase.storage
+    .from('log-pdfs')
+    .createSignedUrl(storagePath, 60 * 60 * 24 * 30); // 30 days
+
+  if (!data?.signedUrl) {
+    throw new Error('Failed to generate signed URL');
+  }
+
+  return data.signedUrl;
+}
+
+export async function generateLogPdfPuppeteer(
+  logId: string
+): Promise<PdfResult> {
+  try {
+    const pdfData = await loadLogPdfData(logId);
+    const filename = generateFilename(pdfData);
+    const html = generateHtml(
+      pdfData.log,
+      pdfData.organization,
+      pdfData.profile
+    );
+
+    // Launch Puppeteer
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+
+    // Generate PDF
+    const pdfBuffer = await page.pdf({
+      format: 'Letter',
+      printBackground: true,
+      margin: {
+        top: '0.5in',
+        right: '0.5in',
+        bottom: '0.5in',
+        left: '0.5in',
+      },
+    });
+
+    await browser.close();
+
+    // Upload to Supabase Storage
+    const supabase = createAdminClient();
+    const date = new Date(pdfData.log.occurred_at);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const storagePath = `${pdfData.log.org_id}/${year}/${month}/${filename}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('log-pdfs')
+      .upload(storagePath, pdfBuffer, {
+        contentType: 'application/pdf',
+        upsert: true,
+      });
+
+    if (uploadError) {
+      throw new Error(`Failed to upload PDF: ${uploadError.message}`);
+    }
+
+    const pdfUrl = await generateSignedUrl(storagePath);
+
+    // Send email if customer email is provided
+    if (pdfData.log.customer_email) {
+      try {
+        // Validate PDF buffer
+        if (!pdfBuffer || pdfBuffer.length === 0) {
+          throw new Error('PDF buffer is empty or invalid');
+        }
+
+        // Check what's actually in the buffer
+        const bufferStart = Buffer.from(pdfBuffer)
+          .toString('utf8')
+          .substring(0, 20);
+        console.log('PDF buffer start:', bufferStart);
+
+        // Check if PDF starts with PDF header (but don't fail if it doesn't)
+        const pdfHeader = Buffer.from(pdfBuffer)
+          .toString('utf8')
+          .substring(0, 4);
+        if (pdfHeader !== '%PDF') {
+          console.log(
+            'Warning: PDF does not start with %PDF header, but continuing anyway'
+          );
+          console.log('Actual header:', pdfHeader);
+        }
+
+        await sendLogPdfEmail(
+          pdfData.log.customer_email,
+          pdfData.log,
+          Buffer.from(pdfBuffer),
+          filename
+        );
+
+        console.log('Email sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send email:', emailError);
+        // Don't throw - PDF generation succeeded even if email failed
+      }
+    }
+
+    return {
+      pdfUrl,
+      storagePath,
+      filename,
+    };
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    throw new Error(
+      `Failed to generate PDF for log ${logId}: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}

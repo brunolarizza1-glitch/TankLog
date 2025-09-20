@@ -1,0 +1,29 @@
+<svg width="300" height="150" viewBox="0 0 300 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield with propane tank icon -->
+  <g transform="translate(150, 50)">
+    <!-- Outer yellow shield border -->
+    <path d="M-40 -20 L-20 -30 L20 -30 L40 -20 L40 10 L35 20 L20 30 L-20 30 L-35 20 L-40 10 Z" 
+          fill="#F6C341" stroke="#F6C341" stroke-width="3"/>
+    
+    <!-- Inner blue shield -->
+    <path d="M-32 -16 L-16 -24 L16 -24 L32 -16 L32 8 L28 16 L16 24 L-16 24 L-28 16 L-32 8 Z" 
+          fill="#114FB3"/>
+    
+    <!-- Propane tank inside shield -->
+    <g transform="translate(0, -6)">
+      <!-- Tank body -->
+      <rect x="-8" y="0" width="16" height="12" fill="#0F4C8A" rx="2"/>
+      <!-- Tank top with valve -->
+      <rect x="-6" y="-2" width="12" height="3" fill="#0F4C8A" rx="1.5"/>
+      <!-- Valve handle -->
+      <rect x="-1.5" y="-4" width="3" height="2" fill="#0F4C8A" rx="1"/>
+      <!-- Tank base -->
+      <rect x="-10" y="12" width="20" height="2" fill="#0F4C8A" rx="1"/>
+    </g>
+  </g>
+  
+  <!-- TankLog Text -->
+  <text x="150" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="700" fill="#114FB3" text-anchor="middle">
+    TankLog
+  </text>
+</svg>
