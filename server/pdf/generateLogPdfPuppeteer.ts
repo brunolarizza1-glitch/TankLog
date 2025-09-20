@@ -265,10 +265,25 @@ export async function generateLogPdfPuppeteer(
       pdfData.profile
     );
 
-    // Launch Puppeteer
+    // Launch Puppeteer with Vercel-compatible configuration
+    console.log('Launching Puppeteer with executable path:', process.env.PUPPETEER_EXECUTABLE_PATH);
+    
     const browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--single-process',
+        '--disable-gpu'
+      ],
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+    }).catch((error) => {
+      console.error('Failed to launch Puppeteer:', error);
+      throw new Error(`Puppeteer launch failed: ${error.message}`);
     });
 
     const page = await browser.newPage();
