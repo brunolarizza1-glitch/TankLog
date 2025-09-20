@@ -308,6 +308,12 @@ export async function generateLogPdfPuppeteer(
     const pdfUrl = await generateSignedUrl(storagePath);
 
     // Send email if customer email is provided
+    console.log('Checking customer email:', {
+      hasCustomerEmail: !!pdfData.log.customer_email,
+      customerEmail: pdfData.log.customer_email,
+      logId: pdfData.log.id
+    });
+    
     if (pdfData.log.customer_email) {
       try {
         // Validate PDF buffer
@@ -344,6 +350,8 @@ export async function generateLogPdfPuppeteer(
         console.error('Failed to send email:', emailError);
         // Don't throw - PDF generation succeeded even if email failed
       }
+    } else {
+      console.log('No customer email provided, skipping email send');
     }
 
     return {
