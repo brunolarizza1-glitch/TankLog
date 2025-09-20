@@ -24,7 +24,3 @@ async function testPdfGeneration() {
 }
 
 testPdfGeneration();
-
-
-
-

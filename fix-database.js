@@ -17,8 +17,3 @@ CREATE INDEX IF NOT EXISTS idx_logs_pdf_url ON logs(pdf_url);
 
 console.log('Copy and paste this SQL into your Supabase SQL Editor:');
 console.log(sql);
-
-
-
-
-

@@ -126,4 +126,3 @@ GET /api/test/pdf?logId={logId}
 ```
 
 This will generate a PDF and return the URL for immediate viewing.
-

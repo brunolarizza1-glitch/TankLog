@@ -557,4 +557,3 @@ async function generateSignedUrl(storagePath: string): Promise<string> {
 
   return data.signedUrl;
 }
-

@@ -74,7 +74,10 @@ export class Database {
         if (error.code === 'PGRST116') {
           return null; // Not found
         }
-        throw new DatabaseError(`Failed to fetch organization: ${error.message}`, { error });
+        throw new DatabaseError(
+          `Failed to fetch organization: ${error.message}`,
+          { error }
+        );
       }
 
       return data;
@@ -82,7 +85,9 @@ export class Database {
       if (error instanceof DatabaseError) {
         throw error;
       }
-      throw new DatabaseError('Unexpected error fetching organization', { error });
+      throw new DatabaseError('Unexpected error fetching organization', {
+        error,
+      });
     }
   }
 

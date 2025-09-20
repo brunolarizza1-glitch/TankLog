@@ -28,7 +28,7 @@ A modern Next.js application for tank logging with Supabase integration, PDF gen
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Supabase account
 - Google Cloud Console account (for OAuth)
@@ -38,22 +38,26 @@ A modern Next.js application for tank logging with Supabase integration, PDF gen
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/brunolarizza1-glitch/TankLog.git
    cd TankLog
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp env.example .env.local
    ```
-   
+
    Then edit `.env.local` with your actual credentials:
+
    ```env
    # Supabase
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
@@ -80,6 +84,7 @@ A modern Next.js application for tank logging with Supabase integration, PDF gen
    - Add your Google OAuth credentials
 
 5. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -94,13 +99,14 @@ A modern Next.js application for tank logging with Supabase integration, PDF gen
 1. Create a new project at [supabase.com](https://supabase.com)
 2. Go to Settings > API to get your URL and keys
 3. Run the database migrations:
+
    ```bash
    # Install Supabase CLI
    npm install -g supabase
-   
+
    # Link your project
    supabase link --project-ref your-project-ref
-   
+
    # Run migrations
    supabase db push
    ```
@@ -180,6 +186,7 @@ See `supabase/migrations/` for the complete schema.
 ### Other Platforms
 
 The app can be deployed to any platform that supports Next.js:
+
 - Netlify
 - Railway
 - DigitalOcean App Platform

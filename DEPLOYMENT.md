@@ -19,11 +19,13 @@ This guide will help you deploy TankLog to your domain `tanklog.co`.
 3. Update the following settings:
 
 **Site URL:**
+
 ```
 https://tanklog.co
 ```
 
 **Redirect URLs:**
+
 ```
 https://tanklog.co
 https://tanklog.co/auth/callback
@@ -115,16 +117,19 @@ PDF_SIGNING_SECRET=your_secure_random_signing_secret
 ## 5. DNS Configuration
 
 ### For Vercel:
+
 1. Add a CNAME record:
    - Name: `@` or `tanklog.co`
    - Value: `cname.vercel-dns.com`
 
 ### For Netlify:
+
 1. Add a CNAME record:
    - Name: `@` or `tanklog.co`
    - Value: `your-app-name.netlify.app`
 
 ### For Railway:
+
 1. Add a CNAME record:
    - Name: `@` or `tanklog.co`
    - Value: `your-app-name.railway.app`
@@ -156,6 +161,7 @@ After deployment, test the following:
 ## 8. Monitoring
 
 Set up monitoring for:
+
 - Application uptime
 - Error tracking (Sentry, LogRocket)
 - Performance monitoring
@@ -190,6 +196,7 @@ Set up monitoring for:
 ## Support
 
 If you encounter issues:
+
 1. Check the deployment platform logs
 2. Verify all environment variables
 3. Test locally with production environment

@@ -73,8 +73,3 @@ async function testPdfEmail() {
 }
 
 testPdfEmail();
-
-
-
-
-
