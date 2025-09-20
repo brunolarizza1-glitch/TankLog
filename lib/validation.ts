@@ -3,7 +3,7 @@ import { ValidationError } from './errors';
 
 /**
  * Common validation schemas and utilities for API routes
- * 
+ *
  * This module provides Zod schemas and validation utilities for
  * consistent input validation across all API endpoints.
  */
@@ -12,21 +12,36 @@ import { ValidationError } from './errors';
 export const createLogSchema = z.object({
   site: z.string().min(1, 'Site is required').max(255, 'Site name too long'),
   vehicle_id: z.string().max(100, 'Vehicle ID too long').optional(),
-  tank_id: z.string().min(1, 'Tank ID is required').max(100, 'Tank ID too long'),
+  tank_id: z
+    .string()
+    .min(1, 'Tank ID is required')
+    .max(100, 'Tank ID too long'),
   pressure: z.string().max(20, 'Pressure value too long').optional(),
   leak_check: z.boolean(),
   visual_ok: z.boolean().optional(),
   notes: z.string().max(1000, 'Notes too long').optional(),
-  corrective_action: z.string().max(1000, 'Corrective action too long').optional(),
+  corrective_action: z
+    .string()
+    .max(1000, 'Corrective action too long')
+    .optional(),
   customer_email: z.string().email('Invalid email format').optional(),
   compliance_mode: z.enum(['US_NFPA58', 'CA_TSSA']).optional(),
-  photo_urls: z.array(z.string().url('Invalid photo URL')).max(10, 'Too many photos').optional(),
-  initials: z.string().min(2, 'Initials must be at least 2 characters').max(3, 'Initials must be at most 3 characters'),
+  photo_urls: z
+    .array(z.string().url('Invalid photo URL'))
+    .max(10, 'Too many photos')
+    .optional(),
+  initials: z
+    .string()
+    .min(2, 'Initials must be at least 2 characters')
+    .max(3, 'Initials must be at most 3 characters'),
 });
 
 // Organization update validation
 export const updateOrganizationSchema = z.object({
-  name: z.string().min(1, 'Organization name is required').max(255, 'Name too long'),
+  name: z
+    .string()
+    .min(1, 'Organization name is required')
+    .max(255, 'Name too long'),
   logo_url: z.string().url('Invalid logo URL').optional(),
 });
 
@@ -45,7 +60,7 @@ export const updateProfileSchema = z.object({
 
 // Photo upload validation
 export const photoUploadSchema = z.object({
-  file: z.instanceof(File, 'File is required'),
+  file: z.instanceof(File, { message: 'File is required' }),
   orgId: z.string().uuid('Invalid organization ID'),
 });
 
@@ -65,7 +80,7 @@ export function validateRequestBody<T>(
     return schema.parse(body);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const details = error.errors.map(err => ({
+      const details = error.errors.map((err) => ({
         field: err.path.join('.'),
         message: err.message,
       }));
@@ -99,11 +114,15 @@ export function validateFileUpload(
   }
 
   if (file.size > maxSize) {
-    throw new ValidationError(`File size must be less than ${maxSize / 1024 / 1024}MB`);
+    throw new ValidationError(
+      `File size must be less than ${maxSize / 1024 / 1024}MB`
+    );
   }
 
   if (!allowedTypes.includes(file.type)) {
-    throw new ValidationError(`File type must be one of: ${allowedTypes.join(', ')}`);
+    throw new ValidationError(
+      `File type must be one of: ${allowedTypes.join(', ')}`
+    );
   }
 
   return file;

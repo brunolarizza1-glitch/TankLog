@@ -6,7 +6,8 @@ import { ComplianceMode, getComplianceModeInfo } from '@/lib/compliance';
 
 export function useComplianceMode() {
   const { profile } = useAuth();
-  const [complianceMode, setComplianceMode] = useState<ComplianceMode>('US_NFPA58');
+  const [complianceMode, setComplianceMode] =
+    useState<ComplianceMode>('US_NFPA58');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,7 +18,9 @@ export function useComplianceMode() {
       }
 
       try {
-        const response = await fetch(`/api/organizations/${profile.org_id}/compliance-mode`);
+        const response = await fetch(
+          `/api/organizations/${profile.org_id}/compliance-mode`
+        );
         if (response.ok) {
           const data = await response.json();
           setComplianceMode(data.compliance_mode || 'US_NFPA58');

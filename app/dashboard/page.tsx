@@ -14,14 +14,16 @@ export default function DashboardPage() {
     thisMonth: 0,
     pendingIssues: 0,
   });
-  const [recentLogs, setRecentLogs] = useState<Array<{
-    id: string;
-    site?: string;
-    vehicle_id?: string;
-    occurred_at: string;
-    leak_check: boolean;
-    visual_ok?: boolean;
-  }>>([]);
+  const [recentLogs, setRecentLogs] = useState<
+    Array<{
+      id: string;
+      site?: string;
+      vehicle_id?: string;
+      occurred_at: string;
+      leak_check: boolean;
+      visual_ok?: boolean;
+    }>
+  >([]);
   const [logsLoading, setLogsLoading] = useState(false);
 
   const fetchStats = useCallback(async () => {
@@ -183,7 +185,10 @@ export default function DashboardPage() {
                 </div>
               ))}
               <div className="text-center pt-2">
-                <Link href="/logs" className="text-primary text-sm hover:underline">
+                <Link
+                  href="/logs"
+                  className="text-primary text-sm hover:underline"
+                >
                   View all logs →
                 </Link>
               </div>

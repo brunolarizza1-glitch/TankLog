@@ -15,7 +15,7 @@ import {
   queueLogSubmission,
   saveUserPreference,
   loadUserPreference,
-  isOnline,
+  // isOnline,
 } from '@/lib/offline';
 
 interface CompressedPhoto {
@@ -26,7 +26,7 @@ interface CompressedPhoto {
 }
 
 export default function NewLogPage() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const {
     complianceMode,
     complianceInfo,
@@ -287,7 +287,7 @@ export default function NewLogPage() {
               ← Back
             </button>
             <h1 className="text-lg font-semibold text-brand-dark">
-              {complianceInfo.formTitle}
+              {complianceInfo.labels.formTitle}
             </h1>
             <div className="w-16"></div>
           </div>

@@ -1,5 +1,6 @@
 import { ServerClient } from 'postmark';
 import { env } from '@/lib/env';
+import { Log } from '@/server/db';
 
 export const postmark = new ServerClient(
   env.POSTMARK_API_TOKEN || 'dummy-token'
@@ -47,7 +48,7 @@ export const sendEmail = async (params: {
     console.error('Failed to send email:', error);
 
     // If domain restriction error, log it and return a mock response
-    if (error.code === 412) {
+    if ((error as any).code === 412) {
       console.log(
         'Postmark account pending approval - email would be sent to:',
         params.to

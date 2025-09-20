@@ -25,7 +25,7 @@ export default function PhotoPicker({
 }: PhotoPickerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isCompressing, setIsCompressing] = useState(false);
-  const { complianceInfo } = useComplianceMode();
+  // const { complianceInfo } = useComplianceMode();
 
   const compressImage = useCallback(
     async (file: File): Promise<CompressedPhoto> => {

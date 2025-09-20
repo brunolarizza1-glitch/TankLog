@@ -1,6 +1,6 @@
 /**
  * Standardized error handling utilities for TankLog
- * 
+ *
  * This module provides custom error classes and utilities for consistent
  * error handling across the application.
  */
