@@ -2,7 +2,7 @@
 const nextConfig = {
   images: {
     unoptimized: true, // Brand assets under /public/brand must not use next/image
-    domains: ['localhost'],
+    domains: ['localhost', 'tanklog.co'],
   },
   async headers() {
     return [
