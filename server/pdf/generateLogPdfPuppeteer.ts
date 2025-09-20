@@ -307,14 +307,16 @@ export async function generateLogPdfPuppeteer(
 
     const pdfUrl = await generateSignedUrl(storagePath);
 
-    // Send email if customer email is provided
-    console.log('Checking customer email:', {
+    // Always send email to the user who created the log
+    console.log('Sending email to log creator:', {
+      userEmail: pdfData.profile.email,
       hasCustomerEmail: !!pdfData.log.customer_email,
       customerEmail: pdfData.log.customer_email,
       logId: pdfData.log.id
     });
     
-    if (pdfData.log.customer_email) {
+    // Send email to the user who created the log
+    if (pdfData.profile.email) {
       try {
         // Validate PDF buffer
         if (!pdfBuffer || pdfBuffer.length === 0) {
@@ -339,7 +341,7 @@ export async function generateLogPdfPuppeteer(
         }
 
         await sendLogPdfEmail(
-          pdfData.log.customer_email,
+          pdfData.profile.email,
           pdfData.log,
           Buffer.from(pdfBuffer),
           filename
@@ -351,7 +353,7 @@ export async function generateLogPdfPuppeteer(
         // Don't throw - PDF generation succeeded even if email failed
       }
     } else {
-      console.log('No customer email provided, skipping email send');
+      console.log('No user email found, skipping email send');
     }
 
     return {
