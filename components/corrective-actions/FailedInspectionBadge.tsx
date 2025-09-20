@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CorrectiveActionWithDetails } from '@/lib/corrective-actions';
+import {
+  CorrectiveActionWithDetails,
+  getOpenActions,
+} from '@/lib/corrective-actions-client';
 
 interface FailedInspectionBadgeProps {
   inspectionId: string;
@@ -34,16 +37,13 @@ export default function FailedInspectionBadge({
   const loadActions = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/corrective-actions');
-      if (response.ok) {
-        const data = await response.json();
-        const itemActions = (data.actions || []).filter(
-          (action: CorrectiveActionWithDetails) =>
-            action.inspection_id === inspectionId &&
-            action.inspection_item_id === itemId
-        );
-        setActions(itemActions);
-      }
+      const data = await getOpenActions();
+      const itemActions = (data.actions || []).filter(
+        (action: CorrectiveActionWithDetails) =>
+          action.inspection_id === inspectionId &&
+          action.inspection_item_id === itemId
+      );
+      setActions(itemActions);
     } catch (error) {
       console.error('Failed to load corrective actions:', error);
     } finally {

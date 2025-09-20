@@ -6,7 +6,7 @@ import { useSyncStatus } from '@/lib/sync';
 import AppShell from '@/components/AppShell';
 import CorrectiveActionsList from '@/components/corrective-actions/CorrectiveActionsList';
 import ActionCompletionModal from '@/components/corrective-actions/ActionCompletionModal';
-import { CorrectiveActionWithDetails } from '@/lib/corrective-actions';
+import { CorrectiveActionWithDetails } from '@/lib/corrective-actions-client';
 import { useRouter } from 'next/navigation';
 
 export default function MobileCorrectiveActionsPage() {
@@ -33,7 +33,7 @@ export default function MobileCorrectiveActionsPage() {
   };
 
   const handleMarkCompleted = (actionId: string) => {
-    setSelectedAction(actions.find((a) => a.id === actionId) || null);
+    // This will be handled by the CorrectiveActionsList component
     setShowCompletionModal(true);
   };
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { CorrectiveActionWithDetails } from '@/lib/corrective-actions';
+import { CorrectiveActionWithDetails } from '@/lib/corrective-actions-client';
 import { useAuth } from '@/lib/auth';
 import { useSyncStatus } from '@/lib/sync';
 

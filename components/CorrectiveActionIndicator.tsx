@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import {
-  correctiveActionService,
   type CorrectiveActionWithDetails,
-} from '@/lib/corrective-actions';
+  getOpenActions,
+} from '@/lib/corrective-actions-client';
 
 interface CorrectiveActionIndicatorProps {
   inspectionId: string;
@@ -33,9 +33,9 @@ export default function CorrectiveActionIndicator({
   const loadActions = async () => {
     setLoading(true);
     try {
-      const openActions = await correctiveActionService.getOpenActions();
-      const itemActions = openActions.filter(
-        (action) =>
+      const data = await getOpenActions();
+      const itemActions = (data.actions || []).filter(
+        (action: CorrectiveActionWithDetails) =>
           action.inspection_id === inspectionId &&
           action.inspection_item_id === itemId
       );

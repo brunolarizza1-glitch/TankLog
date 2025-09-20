@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { CorrectiveActionWithDetails } from '@/lib/corrective-actions';
+import {
+  CorrectiveActionWithDetails,
+  getOpenActions,
+} from '@/lib/corrective-actions-client';
 import { offlineCorrectiveActionsService } from '@/lib/offline-corrective-actions';
 import { useSyncStatus } from '@/lib/sync';
 
@@ -16,15 +19,12 @@ export function useOfflineCorrectiveActions() {
     try {
       if (isOnline) {
         // Load from API when online
-        const response = await fetch('/api/corrective-actions');
-        if (response.ok) {
-          const data = await response.json();
-          const apiActions = data.actions || [];
-          setActions(apiActions);
+        const data = await getOpenActions();
+        const apiActions = data.actions || [];
+        setActions(apiActions);
 
-          // Cache for offline use
-          await offlineCorrectiveActionsService.cacheActions(apiActions);
-        }
+        // Cache for offline use
+        await offlineCorrectiveActionsService.cacheActions(apiActions);
       } else {
         // Load from cache when offline
         const cachedActions =
@@ -125,7 +125,9 @@ export function useOfflineCorrectiveActions() {
           // Update local state
           setActions((prev) =>
             prev.map((action) =>
-              action.id === actionId ? { ...action, status } : action
+              action.id === actionId
+                ? { ...action, status: status as any }
+                : action
             )
           );
         }

@@ -339,7 +339,7 @@ class OfflineCorrectiveActionsService {
     try {
       const cachedActions = this.getCachedActions();
       const updatedActions = cachedActions.map((action) =>
-        action.id === actionId ? { ...action, status } : action
+        action.id === actionId ? { ...action, status: status as any } : action
       );
       await this.cacheActions(updatedActions);
     } catch (error) {

@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
           
           <div class="action-details">
             <h3 style="margin-top: 0; color: #374151;">Action Details:</h3>
-            <p><strong>Assigned to:</strong> ${action.technician?.name || 'Unknown'}</p>
+            <p><strong>Assigned to:</strong> ${action.technician?.[0]?.name || action.assigned_to || 'Unknown'}</p>
             <p><strong>Action ID:</strong> ${action.id}</p>
           </div>
           

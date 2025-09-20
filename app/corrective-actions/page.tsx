@@ -7,7 +7,7 @@ import CorrectiveActionsList from '@/components/corrective-actions/CorrectiveAct
 import ActionCompletionModal from '@/components/corrective-actions/ActionCompletionModal';
 import { useOfflineCorrectiveActions } from '@/lib/hooks/useOfflineCorrectiveActions';
 import { useRouter } from 'next/navigation';
-import { CorrectiveActionWithDetails } from '@/lib/corrective-actions';
+import { CorrectiveActionWithDetails } from '@/lib/corrective-actions-client';
 
 export default function CorrectiveActionsPage() {
   const { user } = useAuth();

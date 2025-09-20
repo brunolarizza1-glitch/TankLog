@@ -172,8 +172,8 @@ export class ReminderService {
     const emailData = {
       to: action.technician?.email || action.assigned_to,
       subject: template.subject,
-      html: template.html,
-      text: template.text,
+      htmlBody: template.html,
+      textBody: template.text,
       tag: 'corrective-action-reminder',
       metadata: {
         reminder_id: reminder.id,
@@ -258,7 +258,7 @@ export class ReminderService {
       const orgActions = new Map<string, CorrectiveActionWithDetails[]>();
 
       for (const action of overdueActions) {
-        const orgId = action.inspection?.org_id || 'unknown';
+        const orgId = (action.inspection as any)?.org_id || 'unknown';
         orgOverdueCounts.set(orgId, (orgOverdueCounts.get(orgId) || 0) + 1);
 
         if (!orgActions.has(orgId)) {
@@ -270,7 +270,7 @@ export class ReminderService {
       let escalationCount = 0;
 
       // Create escalation reminders for orgs with multiple overdue actions
-      for (const [orgId, count] of orgOverdueCounts) {
+      for (const [orgId, count] of Array.from(orgOverdueCounts.entries())) {
         if (count >= 3) {
           // Escalate if 3+ overdue actions
           const actions = orgActions.get(orgId) || [];
@@ -319,13 +319,8 @@ export class ReminderService {
         await sendEmail({
           to: contact.email,
           subject: template.subject,
-          html: template.html,
-          text: template.text,
-          tag: 'corrective-action-escalation',
-          metadata: {
-            org_id: orgId,
-            overdue_count: overdueActions.length,
-          },
+          htmlBody: template.html,
+          textBody: template.text,
         });
       } catch (error) {
         console.error(

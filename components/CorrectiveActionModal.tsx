@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import {
-  correctiveActionService,
   type FailureDetails,
-} from '@/lib/corrective-actions';
+  createCorrectiveAction,
+} from '@/lib/corrective-actions-client';
 
 interface CorrectiveActionModalProps {
   isOpen: boolean;
@@ -48,10 +48,15 @@ export default function CorrectiveActionModal({
         customSeverity: formData.customSeverity || undefined,
       };
 
-      const action = await correctiveActionService.createCorrectiveAction({
+      const action = await createCorrectiveAction({
         inspectionId,
         itemId: failureItem.itemId,
-        failureDetails,
+        failureDetails: {
+          itemId: failureItem.itemId,
+          description: formData.description,
+          requiredAction: formData.requiredAction,
+          assignedTo: formData.assignedTo,
+        },
       });
 
       onSuccess(action.id);

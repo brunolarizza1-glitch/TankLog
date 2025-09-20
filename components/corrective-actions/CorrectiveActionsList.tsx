@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CorrectiveActionWithDetails } from '@/lib/corrective-actions';
+import {
+  CorrectiveActionWithDetails,
+  getOpenActions,
+} from '@/lib/corrective-actions-client';
 import { useAuth } from '@/lib/auth';
 import { useSyncStatus } from '@/lib/sync';
 
@@ -38,12 +41,7 @@ export default function CorrectiveActionsList({
     setError(null);
 
     try {
-      const response = await fetch('/api/corrective-actions');
-      if (!response.ok) {
-        throw new Error('Failed to load corrective actions');
-      }
-
-      const data = await response.json();
+      const data = await getOpenActions();
       setActions(data.actions || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load actions');

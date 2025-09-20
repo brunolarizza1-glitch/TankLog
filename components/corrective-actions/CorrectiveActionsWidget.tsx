@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CorrectiveActionWithDetails } from '@/lib/corrective-actions';
+import {
+  CorrectiveActionWithDetails,
+  getOpenActions,
+} from '@/lib/corrective-actions-client';
 import { useRouter } from 'next/navigation';
 
 interface CorrectiveActionsWidgetProps {
@@ -32,20 +35,21 @@ export default function CorrectiveActionsWidget({
   const loadActions = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/corrective-actions');
-      if (response.ok) {
-        const data = await response.json();
-        const allActions = data.actions || [];
-        setActions(allActions.slice(0, maxItems));
+      const data = await getOpenActions();
+      const allActions = data.actions || [];
+      setActions(allActions.slice(0, maxItems));
 
-        // Calculate stats
-        const now = new Date();
-        const overdue = allActions.filter((action) => {
+      // Calculate stats
+      const now = new Date();
+      const overdue = allActions.filter(
+        (action: CorrectiveActionWithDetails) => {
           const dueDate = new Date(action.due_date);
           return action.status === 'overdue' || dueDate < now;
-        }).length;
+        }
+      ).length;
 
-        const dueSoon = allActions.filter((action) => {
+      const dueSoon = allActions.filter(
+        (action: CorrectiveActionWithDetails) => {
           const dueDate = new Date(action.due_date);
           const hoursUntilDue =
             (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -54,22 +58,24 @@ export default function CorrectiveActionsWidget({
             hoursUntilDue <= 24 &&
             hoursUntilDue > 0
           );
-        }).length;
+        }
+      ).length;
 
-        const onTrack = allActions.filter((action) => {
+      const onTrack = allActions.filter(
+        (action: CorrectiveActionWithDetails) => {
           const dueDate = new Date(action.due_date);
           const hoursUntilDue =
             (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
           return action.status !== 'overdue' && hoursUntilDue > 24;
-        }).length;
+        }
+      ).length;
 
-        setStats({
-          total: allActions.length,
-          overdue,
-          dueSoon,
-          onTrack,
-        });
-      }
+      setStats({
+        total: allActions.length,
+        overdue,
+        dueSoon,
+        onTrack,
+      });
     } catch (error) {
       console.error('Failed to load corrective actions:', error);
     } finally {

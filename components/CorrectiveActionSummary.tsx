@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import {
-  correctiveActionService,
   type CorrectiveActionWithDetails,
-} from '@/lib/corrective-actions';
+  getOpenActions,
+} from '@/lib/corrective-actions-client';
 
 interface CorrectiveActionSummaryProps {
   inspectionId: string;
@@ -25,9 +25,10 @@ export default function CorrectiveActionSummary({
   const loadActions = async () => {
     setLoading(true);
     try {
-      const openActions = await correctiveActionService.getOpenActions();
-      const inspectionActions = openActions.filter(
-        (action) => action.inspection_id === inspectionId
+      const data = await getOpenActions();
+      const inspectionActions = (data.actions || []).filter(
+        (action: CorrectiveActionWithDetails) =>
+          action.inspection_id === inspectionId
       );
       setActions(inspectionActions);
     } catch (error) {
