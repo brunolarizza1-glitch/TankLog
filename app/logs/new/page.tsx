@@ -6,6 +6,9 @@ import { useComplianceMode } from '@/lib/hooks/useComplianceMode';
 import { useSyncStatus } from '@/lib/sync';
 import AppShell from '@/components/AppShell';
 import PhotoPicker from '@/components/photos/PhotoPicker';
+import CorrectiveActionModal from '@/components/CorrectiveActionModal';
+import CorrectiveActionIndicator from '@/components/CorrectiveActionIndicator';
+import CorrectiveActionSummary from '@/components/CorrectiveActionSummary';
 import { useRouter } from 'next/navigation';
 import { validateLogData } from '@/lib/compliance';
 import {
@@ -39,6 +42,17 @@ export default function NewLogPage() {
   const [errors, setErrors] = useState<string[]>([]);
   const [showDraftPrompt, setShowDraftPrompt] = useState(false);
   const [hasDraft, setHasDraft] = useState(false);
+
+  // Corrective action state
+  const [showCorrectiveActionModal, setShowCorrectiveActionModal] =
+    useState(false);
+  const [currentFailureItem, setCurrentFailureItem] = useState<{
+    itemId: string;
+    itemName: string;
+    currentValue: boolean | null;
+  } | null>(null);
+  const [createdActions, setCreatedActions] = useState<string[]>([]);
+  const [showActionSummary, setShowActionSummary] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -90,6 +104,41 @@ export default function NewLogPage() {
     if (errors.length > 0) {
       setErrors([]);
     }
+
+    // Check for failures when boolean fields change
+    if (typeof value === 'boolean') {
+      checkForFailures(field, value);
+    }
+  };
+
+  // Check for failures and trigger corrective action modal
+  const checkForFailures = (field: string, value: boolean | null) => {
+    if (field === 'leak_check' && value === false) {
+      setCurrentFailureItem({
+        itemId: 'leak_check',
+        itemName: 'Leak Check',
+        currentValue: value,
+      });
+      setShowCorrectiveActionModal(true);
+    } else if (field === 'visual_ok' && value === false) {
+      setCurrentFailureItem({
+        itemId: 'visual_inspection',
+        itemName: 'Visual Inspection',
+        currentValue: value,
+      });
+      setShowCorrectiveActionModal(true);
+    }
+  };
+
+  const handleCorrectiveActionCreated = (actionId: string) => {
+    setCreatedActions((prev) => [...prev, actionId]);
+    setShowActionSummary(true);
+    setMessage('Corrective action created successfully!');
+  };
+
+  const handleCorrectiveActionModalClose = () => {
+    setShowCorrectiveActionModal(false);
+    setCurrentFailureItem(null);
   };
 
   const handleResumeDraft = useCallback(() => {
@@ -160,6 +209,17 @@ export default function NewLogPage() {
       return;
     }
 
+    // Check if there are failures that need corrective actions
+    const hasFailures =
+      formData.leak_check === false || formData.visual_ok === false;
+    if (hasFailures && createdActions.length === 0) {
+      setErrors([
+        'Please create corrective actions for all failed items before submitting.',
+      ]);
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       if (online) {
         // Online submission
@@ -215,6 +275,18 @@ export default function NewLogPage() {
       throw new Error(errorData.error || 'Failed to create log');
     }
 
+    const result = await response.json();
+
+    // Handle corrective actions if any were created
+    if (result.correctiveActions && result.correctiveActions.length > 0) {
+      setCreatedActions(result.correctiveActions);
+      setMessage(
+        `Log created successfully! ${result.correctiveActions.length} corrective action(s) created.`
+      );
+    } else {
+      setMessage('Log created successfully!');
+    }
+
     // Save user preferences for autofill
     if (user?.id) {
       saveUserPreference(user.id, 'lastSite', formData.site);
@@ -226,7 +298,6 @@ export default function NewLogPage() {
       clearDraft(user.id);
     }
 
-    setMessage('Log created successfully!');
     setTimeout(() => {
       router.push('/logs/success');
     }, 1500);
@@ -368,6 +439,18 @@ export default function NewLogPage() {
           </div>
         )}
 
+        {/* Corrective Action Summary */}
+        {showActionSummary && createdActions.length > 0 && (
+          <div className="mx-4 mt-4">
+            <CorrectiveActionSummary
+              inspectionId="draft"
+              onViewActions={() => {
+                router.push('/corrective-actions');
+              }}
+            />
+          </div>
+        )}
+
         {/* Form */}
         <form
           id="log-form"
@@ -485,6 +568,15 @@ export default function NewLogPage() {
                 <span className="text-base">Fail</span>
               </label>
             </div>
+
+            {/* Corrective Action Indicator for Leak Check */}
+            <CorrectiveActionIndicator
+              inspectionId="draft" // Will be updated after log creation
+              itemId="leak_check"
+              itemName="Leak Check"
+              hasFailure={formData.leak_check === false}
+              onActionCreated={handleCorrectiveActionCreated}
+            />
           </div>
 
           {/* Visual Inspection */}
@@ -515,6 +607,15 @@ export default function NewLogPage() {
                 <span className="text-base">Issues Found</span>
               </label>
             </div>
+
+            {/* Corrective Action Indicator for Visual Inspection */}
+            <CorrectiveActionIndicator
+              inspectionId="draft" // Will be updated after log creation
+              itemId="visual_inspection"
+              itemName="Visual Inspection"
+              hasFailure={formData.visual_ok === false}
+              onActionCreated={handleCorrectiveActionCreated}
+            />
           </div>
 
           {/* Photos */}
@@ -646,6 +747,18 @@ export default function NewLogPage() {
                 : 'Save Offline'}
           </button>
         </div>
+
+        {/* Corrective Action Modal */}
+        {currentFailureItem && (
+          <CorrectiveActionModal
+            isOpen={showCorrectiveActionModal}
+            onClose={handleCorrectiveActionModalClose}
+            onSuccess={handleCorrectiveActionCreated}
+            inspectionId="draft" // Will be updated after log creation
+            failureItem={currentFailureItem}
+            currentTechnicianId={user?.id}
+          />
+        )}
       </div>
     </AppShell>
   );

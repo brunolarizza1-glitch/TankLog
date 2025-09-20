@@ -5,6 +5,7 @@ import { validateLogData } from '@/lib/compliance';
 import { finalizeLogPdf } from '@/lib/actions/finalizeLogPdf';
 import { handleError, AuthenticationError, logError } from '@/lib/errors';
 import { validateRequestBody, createLogSchema } from '@/lib/validation';
+import { correctiveActionService } from '@/lib/corrective-actions';
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,10 +20,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('Log submission received:', { 
-      hasBody: !!body, 
+    console.log('Log submission received:', {
+      hasBody: !!body,
       bodyKeys: Object.keys(body || {}),
-      bodyData: body 
+      bodyData: body,
     });
 
     // Validate request body
@@ -96,9 +97,54 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check for failures and create corrective actions
+    const createdActions = [];
+    const hasFailures = leak_check === false || visual_ok === false;
+
+    if (hasFailures) {
+      try {
+        // Create corrective action for leak check failure
+        if (leak_check === false) {
+          const leakAction =
+            await correctiveActionService.createCorrectiveAction({
+              inspectionId: log.id,
+              itemId: 'leak_check',
+              failureDetails: {
+                itemId: 'leak_check',
+                description: 'Leak check failed during inspection',
+                requiredAction:
+                  corrective_action || 'Investigate and repair leak source',
+                assignedTo: user.id,
+              },
+            });
+          createdActions.push(leakAction.id);
+        }
+
+        // Create corrective action for visual inspection failure
+        if (visual_ok === false) {
+          const visualAction =
+            await correctiveActionService.createCorrectiveAction({
+              inspectionId: log.id,
+              itemId: 'visual_inspection',
+              failureDetails: {
+                itemId: 'visual_inspection',
+                description: 'Visual inspection revealed issues',
+                requiredAction:
+                  corrective_action || 'Address visual inspection findings',
+                assignedTo: user.id,
+              },
+            });
+          createdActions.push(visualAction.id);
+        }
+      } catch (error) {
+        console.error('Failed to create corrective actions:', error);
+        // Don't fail the log creation if corrective actions fail
+      }
+    }
+
     // Generate PDF asynchronously (don't wait for it)
     console.log('Starting PDF generation for log:', log.id);
-    
+
     // Test: Try to call finalizeLogPdf directly
     try {
       const pdfResult = await finalizeLogPdf(log.id);
@@ -111,6 +157,7 @@ export async function POST(request: NextRequest) {
       success: true,
       log,
       message: 'Log created successfully',
+      correctiveActions: createdActions,
     });
   } catch (error) {
     logError(error, 'POST /api/logs');

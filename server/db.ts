@@ -41,6 +41,7 @@ export interface Log {
   pdf_url?: string;
   email_message_id?: string;
   initials?: string;
+  has_failures?: boolean;
   created_at: string;
 }
 

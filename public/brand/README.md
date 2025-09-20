@@ -29,3 +29,5 @@ These assets are used throughout the application:
 - Do NOT use next/image for these assets
 - Use standard `<img>` tags with `brand-img` class
 - Assets are used as-is without re-encoding or color shifts
+
+
