@@ -26,7 +26,7 @@ export const sendEmail = async (params: {
 
   // Use a verified domain for Postmark
   // Update this to match your verified domain in Postmark
-  const fromAddress = 'noreply@tanklog.co';
+  const fromAddress = 'bruno@tanklog.co';
 
   try {
     console.log('Sending email via Postmark:', {
