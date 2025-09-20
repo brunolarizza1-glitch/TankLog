@@ -19,9 +19,15 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    console.log('Log submission received:', { 
+      hasBody: !!body, 
+      bodyKeys: Object.keys(body || {}),
+      bodyData: body 
+    });
 
     // Validate request body
     const validatedData = validateRequestBody(createLogSchema, body);
+    console.log('Validation passed:', { validatedData });
     const {
       site,
       vehicle_id,
@@ -48,7 +54,9 @@ export async function POST(request: NextRequest) {
 
     // Validate log data based on compliance mode
     const validation = validateLogData(body, compliance_mode || 'US_NFPA58');
+    console.log('Compliance validation result:', validation);
     if (!validation.valid) {
+      console.log('Validation failed:', validation.errors);
       return NextResponse.json(
         {
           error: 'Validation failed',

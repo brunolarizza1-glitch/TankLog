@@ -10,7 +10,7 @@ import { ValidationError } from './errors';
 
 // Log creation validation
 export const createLogSchema = z.object({
-  site: z.string().min(1, 'Site is required').max(255, 'Site name too long'),
+  site: z.string().max(255, 'Site name too long').optional(),
   vehicle_id: z.string().max(100, 'Vehicle ID too long').optional(),
   tank_id: z
     .string()

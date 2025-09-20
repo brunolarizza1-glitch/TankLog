@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const supabase = createClient();
     const redirectUrl = `${process.env.APP_URL}/auth/callback`;
     console.log('Sending magic link to:', email, 'with redirect:', redirectUrl);
-    
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
