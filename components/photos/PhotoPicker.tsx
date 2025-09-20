@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
+import NextImage from 'next/image';
 // import { useComplianceMode } from '@/lib/hooks/useComplianceMode';
 
 interface CompressedPhoto {
@@ -162,9 +163,11 @@ export default function PhotoPicker({
         <div className="grid grid-cols-2 gap-3">
           {photos.map((photo) => (
             <div key={photo.id} className="relative group">
-              <img
+              <NextImage
                 src={photo.dataUrl}
                 alt={`Photo ${photo.id}`}
+                width={200}
+                height={96}
                 className="w-full h-24 object-cover rounded-lg border border-gray-200"
               />
               <button

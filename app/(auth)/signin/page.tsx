@@ -68,9 +68,11 @@ export default function SignInPage() {
     <AppShell>
       <div className="space-y-6">
         <div className="text-center space-y-4">
-          <img
+          <Image
             src="/logo-square.png"
             alt="TankLog"
+            width={80}
+            height={80}
             className="brand-img h-20 w-20 mx-auto"
             style={{
               minHeight: '80px',

@@ -48,7 +48,12 @@ export const sendEmail = async (params: {
     console.error('Failed to send email:', error);
 
     // If domain restriction error, log it and return a mock response
-    if (error && typeof error === 'object' && 'code' in error && error.code === 412) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      error.code === 412
+    ) {
       console.log(
         'Postmark account pending approval - email would be sent to:',
         params.to

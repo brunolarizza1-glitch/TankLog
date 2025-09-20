@@ -80,7 +80,11 @@ export function validateLogData(
   const errors: string[] = [];
 
   // Common required fields
-  if (!data.tank_id || typeof data.tank_id !== 'string' || !data.tank_id.trim()) {
+  if (
+    !data.tank_id ||
+    typeof data.tank_id !== 'string' ||
+    !data.tank_id.trim()
+  ) {
     errors.push('Tank/Cylinder ID is required');
   }
 
@@ -103,7 +107,9 @@ export function validateLogData(
     // Either site OR vehicle ID required
     if (
       (!data.site || typeof data.site !== 'string' || !data.site.trim()) &&
-      (!data.vehicle_id || typeof data.vehicle_id !== 'string' || !data.vehicle_id.trim())
+      (!data.vehicle_id ||
+        typeof data.vehicle_id !== 'string' ||
+        !data.vehicle_id.trim())
     ) {
       errors.push(
         'Either Site or Vehicle ID is required for US NFPA 58 compliance'
@@ -126,7 +132,9 @@ export function validateLogData(
   // Corrective action required if there are issues
   if (
     (data.leak_check === false || data.visual_ok === false) &&
-    (!data.corrective_action || typeof data.corrective_action !== 'string' || !data.corrective_action.trim())
+    (!data.corrective_action ||
+      typeof data.corrective_action !== 'string' ||
+      !data.corrective_action.trim())
   ) {
     errors.push(
       'Corrective Action is required when Leak Check fails or Visual Inspection indicates issues'

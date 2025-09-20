@@ -2,6 +2,7 @@
 
 import { useState, useCallback, memo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/lib/auth';
 
 interface AppShellProps {
@@ -36,9 +37,11 @@ const AppShell = memo(function AppShell({
         <div className="flex items-center justify-between max-w-md mx-auto">
           <div className="flex items-center space-x-3">
             <Link href="/dashboard" className="flex items-center">
-              <img
+              <Image
                 src="/logo-horizontal.png"
                 alt="TankLog"
+                width={200}
+                height={64}
                 className="brand-img h-12 w-auto max-h-12 sm:max-h-16 hover:opacity-80 transition-opacity cursor-pointer"
                 style={{ minHeight: '48px', minWidth: '150px' }}
                 onError={(e) => {
