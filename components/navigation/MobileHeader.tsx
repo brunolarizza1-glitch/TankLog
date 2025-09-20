@@ -58,7 +58,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
               className="p-2 -ml-2 text-gray-500 hover:text-primary-blue transition-colors duration-200"
               aria-label="Go back"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -95,7 +100,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
             className="p-2 text-gray-500 hover:text-primary-blue transition-colors duration-200"
             aria-label="Notifications"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -113,7 +123,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
             className="p-2 text-gray-500 hover:text-primary-blue transition-colors duration-200"
             aria-label="Menu"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -142,7 +157,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                     onClick={() => setShowMenu(false)}
                     className="p-2 text-gray-500 hover:text-primary-blue transition-colors duration-200"
                   >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -159,12 +179,18 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-primary-blue rounded-full flex items-center justify-center">
                     <span className="text-sm font-medium text-white">
-                      {profile?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                      {profile?.name?.charAt(0) ||
+                        user?.email?.charAt(0) ||
+                        'U'}
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-700">{profile?.name || 'User'}</p>
-                    <p className="text-xs text-gray-500">{profile?.email || user?.email}</p>
+                    <p className="text-sm font-medium text-gray-700">
+                      {profile?.name || 'User'}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {profile?.email || user?.email}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -177,7 +203,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                     className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
                     onClick={() => setShowMenu(false)}
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -192,7 +223,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                     className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
                     onClick={() => setShowMenu(false)}
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -207,7 +243,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                     className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
                     onClick={() => setShowMenu(false)}
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -222,7 +263,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                     className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
                     onClick={() => setShowMenu(false)}
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -237,7 +283,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                     className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
                     onClick={() => setShowMenu(false)}
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -263,7 +314,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                   className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
                   onClick={() => setShowMenu(false)}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

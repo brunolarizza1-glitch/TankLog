@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import AppShell from '@/components/AppShell';
 import Link from 'next/link';
+import {
+  ComplianceOverviewCard,
+  QuickActionsCard,
+  AlertSummaryCard,
+  SkeletonCard,
+  EmptyState,
+} from '@/components/dashboard';
 
 export default function DashboardPage() {
   const { user, profile, loading } = useAuth();
@@ -14,14 +21,23 @@ export default function DashboardPage() {
     thisMonth: 0,
     pendingIssues: 0,
   });
-  const [recentLogs, setRecentLogs] = useState<
+  const [complianceData, setComplianceData] = useState({
+    percentage: 0,
+    status: 'compliant' as 'compliant' | 'warning' | 'critical',
+    trend: 'stable' as 'up' | 'down' | 'stable',
+    trendValue: 0,
+  });
+  const [alertData, setAlertData] = useState({
+    overdueCount: 0,
+    dueSoonCount: 0,
+    completedToday: 0,
+  });
+  const [recentActivity, setRecentActivity] = useState<
     Array<{
       id: string;
-      site?: string;
-      vehicle_id?: string;
-      occurred_at: string;
-      leak_check: boolean;
-      visual_ok?: boolean;
+      action: string;
+      timestamp: string;
+      type: 'inspection' | 'action' | 'completion';
     }>
   >([]);
   const [logsLoading, setLogsLoading] = useState(false);
@@ -32,19 +48,78 @@ export default function DashboardPage() {
       if (response.ok) {
         const data = await response.json();
         setStats(data);
+        
+        // Calculate compliance percentage based on logs
+        const totalLogs = data.totalLogs || 0;
+        const pendingIssues = data.pendingIssues || 0;
+        const compliancePercentage = totalLogs > 0 ? Math.round(((totalLogs - pendingIssues) / totalLogs) * 100) : 100;
+        
+        setComplianceData({
+          percentage: compliancePercentage,
+          status: compliancePercentage >= 90 ? 'compliant' : compliancePercentage >= 70 ? 'warning' : 'critical',
+          trend: 'stable', // This would come from historical data
+          trendValue: 0,
+        });
       }
     } catch (error) {
       // Error handling is done in the API route
     }
   }, []);
 
-  const fetchRecentLogs = useCallback(async () => {
+  const fetchAlertData = useCallback(async () => {
+    try {
+      // Fetch corrective actions for alert data
+      const response = await fetch('/api/corrective-actions');
+      if (response.ok) {
+        const data = await response.json();
+        const actions = data.actions || [];
+        
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        const overdueCount = actions.filter((action: any) => 
+          new Date(action.due_date) < now && action.status !== 'completed'
+        ).length;
+        
+        const dueSoonCount = actions.filter((action: any) => {
+          const dueDate = new Date(action.due_date);
+          const daysUntilDue = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          return daysUntilDue <= 3 && daysUntilDue > 0 && action.status !== 'completed';
+        }).length;
+        
+        const completedToday = actions.filter((action: any) => {
+          const completedAt = new Date(action.completed_at);
+          return completedAt >= today && action.status === 'completed';
+        }).length;
+        
+        setAlertData({
+          overdueCount,
+          dueSoonCount,
+          completedToday,
+        });
+      }
+    } catch (error) {
+      // Error handling
+    }
+  }, []);
+
+  const fetchRecentActivity = useCallback(async () => {
     setLogsLoading(true);
     try {
       const response = await fetch('/api/logs');
       if (response.ok) {
         const data = await response.json();
-        setRecentLogs(data.logs?.slice(0, 5) || []); // Get last 5 logs
+        const logs = data.logs?.slice(0, 5) || [];
+        
+        // Convert logs to activity items
+        const activity = logs.map((log: any) => ({
+          id: log.id,
+          action: `Inspection completed at ${log.site || log.vehicle_id || 'Unknown Site'}`,
+          timestamp: log.occurred_at,
+          type: 'inspection' as const,
+        }));
+        
+        setRecentActivity(activity);
       }
     } catch (error) {
       // Error handling is done in the API route
@@ -62,9 +137,10 @@ export default function DashboardPage() {
   useEffect(() => {
     if (profile?.org_id) {
       fetchStats();
-      fetchRecentLogs();
+      fetchAlertData();
+      fetchRecentActivity();
     }
-  }, [profile, fetchStats, fetchRecentLogs]);
+  }, [profile, fetchStats, fetchAlertData, fetchRecentActivity]);
 
   if (loading) {
     return (
@@ -81,118 +157,98 @@ export default function DashboardPage() {
   }
 
   return (
-    <AppShell
-      title="Dashboard"
-      breadcrumbs={[
-        { label: 'Dashboard' }
-      ]}
-    >
+    <AppShell title="Dashboard" breadcrumbs={[{ label: 'Dashboard' }]}>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-brand-dark">
-              Welcome back, {profile?.name || 'User'}!
-            </h1>
-            <p className="text-gray-600">
-              {profile?.org_id
-                ? 'Ready to log your next inspection'
-                : 'Complete your setup to get started'}
-            </p>
+        {/* Welcome Header */}
+        <div className="text-center md:text-left">
+          <h1 className="heading-2 text-gray-700 mb-2">
+            Welcome back, {profile?.name || 'User'}!
+          </h1>
+          <p className="text-gray-500">
+            {profile?.org_id
+              ? `Organization: ${profile.org_id}`
+              : 'No organization assigned'}
+          </p>
+        </div>
+
+        {/* Dashboard Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          {/* Compliance Overview Card - Full width on mobile, spans 2 columns on desktop */}
+          <div className="md:col-span-2 lg:col-span-1">
+            {logsLoading ? (
+              <SkeletonCard variant="compliance" />
+            ) : (
+              <ComplianceOverviewCard
+                compliancePercentage={complianceData.percentage}
+                status={complianceData.status}
+                trend={complianceData.trend}
+                trendValue={complianceData.trendValue}
+              />
+            )}
           </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-500">{profile?.role}</p>
-            <p className="text-sm text-gray-500">{profile?.email}</p>
+
+          {/* Quick Actions Card */}
+          <div className="md:col-span-2 lg:col-span-1">
+            {logsLoading ? (
+              <SkeletonCard variant="actions" />
+            ) : (
+              <QuickActionsCard
+                overdueCount={alertData.overdueCount}
+                recentActivity={recentActivity}
+              />
+            )}
+          </div>
+
+          {/* Alert Summary Card */}
+          <div className="md:col-span-2 lg:col-span-1">
+            {logsLoading ? (
+              <SkeletonCard variant="alerts" />
+            ) : (
+              <AlertSummaryCard
+                overdueCount={alertData.overdueCount}
+                dueSoonCount={alertData.dueSoonCount}
+                completedToday={alertData.completedToday}
+              />
+            )}
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="card p-4">
-            <p className="heading-2 text-gray-700">{stats.totalLogs}</p>
-            <p className="text-sm text-gray-500">Total Logs</p>
+        {/* Additional Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="card p-4 text-center">
+            <p className="heading-2 text-gray-700 mb-1">
+              {stats.totalLogs}
+            </p>
+            <p className="text-sm text-gray-500">Total Inspections</p>
           </div>
-          <div className="card p-4">
-            <p className="heading-2 text-gray-700">{stats.thisMonth}</p>
+          <div className="card p-4 text-center">
+            <p className="heading-2 text-gray-700 mb-1">
+              {stats.thisMonth}
+            </p>
             <p className="text-sm text-gray-500">This Month</p>
           </div>
-          <div className="card p-4">
-            <p className="heading-2 text-danger">{stats.pendingIssues}</p>
-            <p className="text-sm text-gray-500">Issues</p>
+          <div className="card p-4 text-center">
+            <p className="heading-2 text-danger mb-1">
+              {stats.pendingIssues}
+            </p>
+            <p className="text-sm text-gray-500">Pending Issues</p>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="space-y-4">
-          <Link
-            href="/logs/new"
-            className="btn btn-primary btn-lg w-full text-center"
-          >
-            New Log Entry
-          </Link>
-
-          <Link
-            href="/logs"
-            className="btn btn-outline btn-lg w-full text-center"
-          >
-            View All Logs
-          </Link>
-        </div>
-
-        {/* Recent Logs Preview */}
-        <div className="card p-4">
-          <h3 className="heading-4 text-gray-700 mb-4">Recent Logs</h3>
-          {logsLoading ? (
-            <div className="text-center py-8 text-gray-500">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2"></div>
-              <p>Loading logs...</p>
-            </div>
-          ) : recentLogs.length > 0 ? (
-            <div className="space-y-3">
-              {recentLogs.map((log) => (
-                <div
-                  key={log.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex-1">
-                    <p className="font-medium text-sm text-gray-900">
-                      {log.site || log.vehicle_id || 'Unknown Site'}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {new Date(log.occurred_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    {log.leak_check === false && (
-                      <span className="badge badge-danger">Leak Issue</span>
-                    )}
-                    {log.visual_ok === false && (
-                      <span className="badge badge-warning">Visual Issue</span>
-                    )}
-                    {log.leak_check !== false && log.visual_ok !== false && (
-                      <span className="badge badge-success">OK</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-              <div className="text-center pt-2">
-                <Link
-                  href="/logs"
-                  className="text-primary text-sm hover:underline"
-                >
-                  View all logs →
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <p>No recent logs found</p>
-              <Link href="/logs/new" className="text-primary hover:underline">
-                Create your first log
-              </Link>
-            </div>
-          )}
-        </div>
+        {/* Empty State for No Data */}
+        {!logsLoading && stats.totalLogs === 0 && (
+          <EmptyState
+            title="No inspections yet"
+            description="Get started by creating your first inspection log to track your propane compliance."
+            actionLabel="Create First Inspection"
+            actionHref="/logs/new"
+            icon={
+              <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+            }
+          />
+        )}
       </div>
     </AppShell>
   );

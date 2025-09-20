@@ -331,7 +331,7 @@ export default function NewLogPage() {
         title="New Inspection"
         breadcrumbs={[
           { label: 'Inspections', href: '/logs' },
-          { label: 'New Inspection' }
+          { label: 'New Inspection' },
         ]}
       >
         <div className="flex items-center justify-center py-12">
@@ -347,7 +347,7 @@ export default function NewLogPage() {
         title="New Inspection"
         breadcrumbs={[
           { label: 'Inspections', href: '/logs' },
-          { label: 'New Inspection' }
+          { label: 'New Inspection' },
         ]}
       >
         <div className="flex items-center justify-center py-12">
@@ -362,7 +362,7 @@ export default function NewLogPage() {
       title="New Inspection"
       breadcrumbs={[
         { label: 'Inspections', href: '/logs' },
-        { label: 'New Inspection' }
+        { label: 'New Inspection' },
       ]}
     >
       <div className="min-h-screen pb-20">
