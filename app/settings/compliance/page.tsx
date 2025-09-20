@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
 import AppShell from '@/components/AppShell';
 import { useRouter } from 'next/navigation';
@@ -28,14 +28,7 @@ export default function ComplianceSettingsPage() {
     }
   }, [user, profile, loading, router]);
 
-  // Load compliance mode
-  useEffect(() => {
-    if (profile?.org_id) {
-      loadComplianceMode();
-    }
-  }, [profile?.org_id]);
-
-  const loadComplianceMode = async () => {
+  const loadComplianceMode = useCallback(async () => {
     if (!profile?.org_id) return;
 
     try {
@@ -47,7 +40,14 @@ export default function ComplianceSettingsPage() {
         setComplianceMode(data.compliance_mode || 'US_NFPA58');
       }
     } catch (error) {}
-  };
+  }, [profile?.org_id]);
+
+  // Load compliance mode
+  useEffect(() => {
+    if (profile?.org_id) {
+      loadComplianceMode();
+    }
+  }, [profile?.org_id, loadComplianceMode]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();

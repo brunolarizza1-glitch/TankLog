@@ -3,11 +3,7 @@
 // import { db } from '@/server/db';
 // import { createClient } from '@/lib/supabase/server';
 
-export async function createLogAndGeneratePdf(/* input: { */
-  // fields: Record<string, unknown>;
-  // photoUrls: string[];
-  // complianceMode: string;
-// }) {
+export async function createLogAndGeneratePdf() {
   try {
     // This is a stub implementation
     // In a real implementation, you would:

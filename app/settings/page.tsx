@@ -15,16 +15,6 @@ export default function SettingsPage() {
   const [logoUrl, setLogoUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/signin');
-      return;
-    }
-
-    // Load organization data
-    loadOrganizationData();
-  }, [user, router]);
-
   const loadOrganizationData = useCallback(async () => {
     if (!profile?.org_id) return;
 
@@ -37,6 +27,16 @@ export default function SettingsPage() {
       }
     } catch (error) {}
   }, [profile?.org_id]);
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/signin');
+      return;
+    }
+
+    // Load organization data
+    loadOrganizationData();
+  }, [user, router, loadOrganizationData]);
 
   const handleSaveCompany = async (e: React.FormEvent) => {
     e.preventDefault();

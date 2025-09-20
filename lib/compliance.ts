@@ -74,14 +74,13 @@ export function getComplianceModeInfo(
 }
 
 export function validateLogData(
-  data: any,
+  data: Record<string, unknown>,
   complianceMode: ComplianceMode
 ): { valid: boolean; errors: string[] } {
-  const modeInfo = getComplianceModeInfo(complianceMode);
   const errors: string[] = [];
 
   // Common required fields
-  if (!data.tank_id?.trim()) {
+  if (!data.tank_id || typeof data.tank_id !== 'string' || !data.tank_id.trim()) {
     errors.push('Tank/Cylinder ID is required');
   }
 
@@ -90,7 +89,9 @@ export function validateLogData(
   }
 
   if (
-    !data.initials?.trim() ||
+    !data.initials ||
+    typeof data.initials !== 'string' ||
+    !data.initials.trim() ||
     data.initials.length < 2 ||
     data.initials.length > 3
   ) {
@@ -100,7 +101,10 @@ export function validateLogData(
   // Mode-specific validation
   if (complianceMode === 'US_NFPA58') {
     // Either site OR vehicle ID required
-    if (!data.site?.trim() && !data.vehicle_id?.trim()) {
+    if (
+      (!data.site || typeof data.site !== 'string' || !data.site.trim()) &&
+      (!data.vehicle_id || typeof data.vehicle_id !== 'string' || !data.vehicle_id.trim())
+    ) {
       errors.push(
         'Either Site or Vehicle ID is required for US NFPA 58 compliance'
       );
@@ -114,7 +118,7 @@ export function validateLogData(
     }
   } else if (complianceMode === 'CA_TSSA') {
     // Site required
-    if (!data.site?.trim()) {
+    if (!data.site || typeof data.site !== 'string' || !data.site.trim()) {
       errors.push('Site is required for Canadian TSSA compliance');
     }
   }
@@ -122,7 +126,7 @@ export function validateLogData(
   // Corrective action required if there are issues
   if (
     (data.leak_check === false || data.visual_ok === false) &&
-    !data.corrective_action?.trim()
+    (!data.corrective_action || typeof data.corrective_action !== 'string' || !data.corrective_action.trim())
   ) {
     errors.push(
       'Corrective Action is required when Leak Check fails or Visual Inspection indicates issues'

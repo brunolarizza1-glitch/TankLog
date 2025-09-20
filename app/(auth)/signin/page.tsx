@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 import { useAuth } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function SignInPage() {
   const { signInWithGoogle, signInWithMagicLink, user } = useAuth();
