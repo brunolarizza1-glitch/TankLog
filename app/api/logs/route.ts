@@ -98,13 +98,14 @@ export async function POST(request: NextRequest) {
 
     // Generate PDF asynchronously (don't wait for it)
     console.log('Starting PDF generation for log:', log.id);
-    finalizeLogPdf(log.id)
-      .then((result) => {
-        console.log('PDF generation completed:', result);
-      })
-      .catch((error) => {
-        console.error('Failed to generate PDF for log:', log.id, error);
-      });
+    
+    // Test: Try to call finalizeLogPdf directly
+    try {
+      const pdfResult = await finalizeLogPdf(log.id);
+      console.log('PDF generation completed synchronously:', pdfResult);
+    } catch (error) {
+      console.error('PDF generation failed synchronously:', error);
+    }
 
     return NextResponse.json({
       success: true,
