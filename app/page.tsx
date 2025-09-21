@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 
 export default function HomePage() {
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, signInWithDemo, isDemo } = useAuth();
   const router = useRouter();
 
   console.log(
@@ -32,6 +32,15 @@ export default function HomePage() {
       router.push('/dashboard');
     }
   }, [user, loading, profile, router]);
+
+  const handleDemoLogin = async () => {
+    try {
+      await signInWithDemo();
+    } catch (error) {
+      console.error('Demo login failed:', error);
+      alert('Demo login failed. Please try again.');
+    }
+  };
 
   if (loading) {
     return (
@@ -132,12 +141,12 @@ export default function HomePage() {
               Try TankLog with sample data or sign in to use your own
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <a
-                href="/demo"
+              <button
+                onClick={handleDemoLogin}
                 className="inline-block bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
                 Try Demo
-              </a>
+              </button>
               <a
                 href="/signin"
                 className="inline-block bg-accent text-brand-dark py-3 px-6 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"

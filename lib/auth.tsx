@@ -11,7 +11,9 @@ interface AuthContextType {
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithMagicLink: (email: string) => Promise<void>;
+  signInWithDemo: () => Promise<void>;
   signOut: () => Promise<void>;
+  isDemo: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,7 +29,9 @@ export function useAuth() {
         loading: true,
         signInWithGoogle: async () => {},
         signInWithMagicLink: async () => {},
+        signInWithDemo: async () => {},
         signOut: async () => {},
+        isDemo: false,
       };
     }
     throw new Error('useAuth must be used within an AuthProvider');
@@ -137,12 +141,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithDemo = async () => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: 'demo@tanklog.com',
+      password: 'demo123',
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
     window.location.href = '/';
   };
+
+  // Check if current user is demo user
+  const isDemo = user?.email === 'demo@tanklog.com';
 
   return (
     <AuthContext.Provider
@@ -152,7 +170,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loading,
         signInWithGoogle,
         signInWithMagicLink,
+        signInWithDemo,
         signOut,
+        isDemo,
       }}
     >
       {children}
