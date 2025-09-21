@@ -29,7 +29,6 @@ export default function ActionCompletionModal({
   action,
   onComplete,
 }: ActionCompletionModalProps) {
-  const { user } = useAuth();
   const { isOnline } = useSyncStatus();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resolutionNotes, setResolutionNotes] = useState('');

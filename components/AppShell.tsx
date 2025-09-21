@@ -21,7 +21,7 @@ const AppShell = memo(function AppShell({
   onBackClick,
   breadcrumbs,
 }: AppShellProps) {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
 
   // Don't show navigation for sign-in pages
   if (showSignIn || !user) {

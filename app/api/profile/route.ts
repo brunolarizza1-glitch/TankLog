@@ -57,7 +57,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, email } = body;
+    const { name } = body;
 
     // Update profile
     const updatedProfile = await db.updateProfile(user.id, {

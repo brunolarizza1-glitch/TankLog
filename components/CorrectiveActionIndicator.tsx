@@ -19,7 +19,6 @@ export default function CorrectiveActionIndicator({
   itemId,
   itemName,
   hasFailure,
-  onActionCreated,
 }: CorrectiveActionIndicatorProps) {
   const [actions, setActions] = useState<CorrectiveActionWithDetails[]>([]);
   const [loading, setLoading] = useState(false);

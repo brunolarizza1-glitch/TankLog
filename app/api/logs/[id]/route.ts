@@ -44,7 +44,7 @@ export async function GET(
     // Get user profile separately to avoid RLS recursion
     let logWithUser = null;
     if (log && !logError) {
-      const { data: userProfile, error: profileError } = await serviceClient
+      const { data: userProfile } = await serviceClient
         .from('profiles')
         .select('id, name, email')
         .eq('id', log.user_id)

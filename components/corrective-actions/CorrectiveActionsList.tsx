@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   CorrectiveActionWithDetails,
   getOpenActions,
@@ -30,11 +30,7 @@ export default function CorrectiveActionsList({
   const [error, setError] = useState<string | null>(null);
   const [selectedFilter, setSelectedFilter] = useState(filter);
 
-  useEffect(() => {
-    loadActions();
-  }, [selectedFilter]);
-
-  const loadActions = async () => {
+  const loadActions = useCallback(async () => {
     if (!user) return;
 
     setLoading(true);
@@ -49,7 +45,11 @@ export default function CorrectiveActionsList({
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, selectedFilter]);
+
+  useEffect(() => {
+    loadActions();
+  }, [loadActions]);
 
   const getPriorityLevel = (
     action: CorrectiveActionWithDetails

@@ -40,14 +40,6 @@ export default function CorrectiveActionModal({
     setIsSubmitting(true);
 
     try {
-      const failureDetails: FailureDetails = {
-        itemId: failureItem.itemId,
-        description: formData.description,
-        requiredAction: formData.requiredAction,
-        assignedTo: formData.assignedTo || undefined,
-        customSeverity: formData.customSeverity,
-      };
-
       const action = await createCorrectiveAction({
         inspectionId,
         itemId: failureItem.itemId,

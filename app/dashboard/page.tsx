@@ -4,7 +4,6 @@ import { useAuth } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import AppShell from '@/components/AppShell';
-import Link from 'next/link';
 import {
   ComplianceOverviewCard,
   QuickActionsCard,

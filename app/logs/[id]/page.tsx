@@ -101,7 +101,7 @@ export default function LogDetailPage() {
             Log not found
           </h2>
           <p className="text-gray-600 mb-4">
-            The log you're looking for doesn't exist or you don't have
+            The log you&apos;re looking for doesn&apos;t exist or you don&apos;t have
             permission to view it.
           </p>
           <button

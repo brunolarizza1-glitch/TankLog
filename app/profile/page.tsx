@@ -18,7 +18,7 @@ interface ProfileData {
 }
 
 export default function ProfilePage() {
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);

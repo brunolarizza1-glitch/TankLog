@@ -32,7 +32,7 @@ interface Log {
 }
 
 export default function ReportsPage() {
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient as createServiceClient } from '@supabase/supabase-js';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('🔍 Test Data API: Starting request...');
 
@@ -44,4 +44,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
