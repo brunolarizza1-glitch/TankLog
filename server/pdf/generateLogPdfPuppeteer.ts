@@ -244,12 +244,11 @@ function generateHtml(logData: any, organization: any, profile: any): string {
 async function uploadPdfToStorage(
   pdfBuffer: Uint8Array,
   filename: string,
-  logId: string
+  logData: { log: any; organization: any; profile: any }
 ): Promise<string> {
   const supabase = createAdminClient();
   
-  // Get log data to determine organization
-  const logData = await loadLogPdfData(logId);
+  // Get organization ID from log data
   const orgId = logData.log.org_id;
   
   // Create storage path
@@ -297,6 +296,10 @@ export async function generateLogPdfPuppeteer(
   console.log('=== PDF GENERATION DEBUG START ===');
   console.log('generateLogPdfPuppeteer called for logId:', logId);
   try {
+    // Load log data once
+    const logData = await loadLogPdfData(logId);
+    console.log('Log data loaded:', logData.log.id);
+    
     // Use the new professional PDF generator
     console.log('Calling generateLogPdfProfessional...');
     const result = await generateLogPdfProfessional(logId);
@@ -306,7 +309,7 @@ export async function generateLogPdfPuppeteer(
     
     // Upload PDF to storage
     console.log('Uploading PDF to storage...');
-    const storagePath = await uploadPdfToStorage(result.pdfBuffer, result.filename, logId);
+    const storagePath = await uploadPdfToStorage(result.pdfBuffer, result.filename, logData);
     console.log('PDF uploaded to storage path:', storagePath);
     
     // Generate signed URL
