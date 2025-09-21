@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import PDFDownloadButton from '@/components/PDFDownloadButton';
 
 interface ReportData {
   totalLogs: number;
@@ -62,26 +63,30 @@ export default function SimpleTestPage() {
                   <strong>Status:</strong> {log.leak_check ? 'Pass' : 'Fail'}
                 </p>
                 {log.pdf_url && (
-                  <button
-                    onClick={() => {
-                      // Test PDF download
-                      const link = document.createElement('a');
-                      link.href = log.pdf_url;
-                      link.download = `TankLog_Report_${log.tank_id}_${new Date(
-                        log.occurred_at
-                      )
-                        .toISOString()
-                        .replace('T', '_')
-                        .replace(/\.\d{3}Z$/, '')
-                        .replace(/:/g, '-')}.pdf`;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
+                  <PDFDownloadButton
+                    log={{
+                      id: log.id,
+                      site: log.site,
+                      tank_id: log.tank_id,
+                      occurred_at: log.occurred_at,
+                      leak_check: log.leak_check,
+                      visual_ok: log.visual_ok,
+                      pressure: log.pressure,
+                      notes: log.notes,
+                      corrective_action: log.corrective_action,
+                      compliance_mode: log.compliance_mode,
+                      user: {
+                        name: 'Test User',
+                        email: 'test@example.com',
+                      },
                     }}
+                    pdfUrl={log.pdf_url}
+                    variant="button"
+                    size="md"
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                   >
                     Download PDF
-                  </button>
+                  </PDFDownloadButton>
                 )}
               </div>
             ))}

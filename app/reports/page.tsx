@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth';
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 import { Card } from '@/components/design-system';
+import PDFDownloadButton from '@/components/PDFDownloadButton';
 
 interface ReportData {
   totalLogs: number;
@@ -355,118 +356,27 @@ export default function ReportsPage() {
                               View
                             </a>
                             {log.pdf_url ? (
-                              <button
-                                type="button"
-                                onClick={async (e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-
-                                  console.log('🔍 PDF Click Debug:', {
-                                    logId: log.id,
-                                    pdfUrl: log.pdf_url,
-                                    signedUrl: pdfUrls[log.id],
-                                    hasSignedUrl: !!pdfUrls[log.id],
-                                  });
-
-                                  if (!pdfUrls[log.id]) {
-                                    // Try to generate the URL on demand
-                                    console.log(
-                                      '🔍 Generating PDF URL on demand for log',
-                                      log.id
-                                    );
-                                    try {
-                                      const response = await fetch(
-                                        '/api/generate-pdf-urls',
-                                        {
-                                          method: 'POST',
-                                          headers: {
-                                            'Content-Type': 'application/json',
-                                          },
-                                          body: JSON.stringify({
-                                            pdfPaths: [
-                                              {
-                                                logId: log.id,
-                                                pdfPath: log.pdf_url,
-                                              },
-                                            ],
-                                          }),
-                                        }
-                                      );
-
-                                      if (response.ok) {
-                                        const data = await response.json();
-                                        const signedUrl = data.urls[log.id];
-                                        if (signedUrl) {
-                                          console.log(
-                                            '✅ Generated signed URL on demand:',
-                                            signedUrl
-                                          );
-                                          // Download the PDF with the exact same filename as generated for email
-                                          const link =
-                                            document.createElement('a');
-                                          link.href = signedUrl;
-                                          link.download = `TankLog_Report_${log.tank_id}_${new Date(
-                                            log.occurred_at
-                                          )
-                                            .toISOString()
-                                            .replace('T', '_')
-                                            .replace(/\.\d{3}Z$/, '')
-                                            .replace(/:/g, '-')}.pdf`;
-                                          document.body.appendChild(link);
-                                          link.click();
-                                          document.body.removeChild(link);
-                                        } else {
-                                          console.log(
-                                            '❌ PDF file not found for log',
-                                            log.id
-                                          );
-                                          alert(
-                                            'PDF file not found. The PDF may not have been generated yet or may have been deleted.'
-                                          );
-                                        }
-                                      } else {
-                                        console.error(
-                                          '❌ Failed to generate signed URL on demand:',
-                                          response.status
-                                        );
-                                        alert(
-                                          'Failed to generate PDF URL. Please try again.'
-                                        );
-                                      }
-                                    } catch (error) {
-                                      console.error(
-                                        '❌ Error generating PDF URL on demand:',
-                                        error
-                                      );
-                                      alert(
-                                        'Failed to generate PDF URL. Please try again.'
-                                      );
-                                    }
-                                  } else {
-                                    console.log(
-                                      '🔍 Opening PDF URL:',
-                                      pdfUrls[log.id]
-                                    );
-                                    // Download the PDF with the exact same filename as generated for email
-                                    const link = document.createElement('a');
-                                    link.href = pdfUrls[log.id];
-                                    link.download = `TankLog_Report_${log.tank_id}_${new Date(
-                                      log.occurred_at
-                                    )
-                                      .toISOString()
-                                      .replace('T', '_')
-                                      .replace(/\.\d{3}Z$/, '')
-                                      .replace(/:/g, '-')}.pdf`;
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
-                                  }
+                              <PDFDownloadButton
+                                log={{
+                                  id: log.id,
+                                  site: log.site,
+                                  tank_id: log.tank_id,
+                                  occurred_at: log.occurred_at,
+                                  leak_check: log.leak_check,
+                                  visual_ok: log.visual_ok,
+                                  pressure: log.pressure,
+                                  notes: log.notes,
+                                  corrective_action: log.corrective_action,
+                                  compliance_mode: log.compliance_mode,
+                                  user: log.user,
                                 }}
-                                className="text-primary hover:text-primary-dark cursor-pointer border-0 bg-transparent p-0 m-0"
-                                style={{ outline: 'none' }}
+                                pdfUrl={pdfUrls[log.id] || log.pdf_url}
+                                variant="link"
+                                size="sm"
+                                className="text-primary hover:text-primary-dark underline"
                               >
                                 PDF
-                              </button>
+                              </PDFDownloadButton>
                             ) : (
                               <span className="text-gray-400 text-sm">
                                 No PDF

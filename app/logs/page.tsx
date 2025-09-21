@@ -6,6 +6,7 @@ import AppShell from '@/components/AppShell';
 import { useRouter } from 'next/navigation';
 import { Log } from '@/server/db';
 import { getComplianceModeInfo } from '@/lib/compliance';
+import PDFDownloadButton from '@/components/PDFDownloadButton';
 
 export default function LogsPage() {
   const { user } = useAuth();
@@ -256,15 +257,30 @@ export default function LogsPage() {
                           Edit Log
                         </button>
                         {log.pdf_url && (
-                          <a
-                            href={log.pdf_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
+                          <PDFDownloadButton
+                            log={{
+                              id: log.id,
+                              site: log.site,
+                              tank_id: log.tank_id,
+                              occurred_at: log.occurred_at,
+                              leak_check: log.leak_check,
+                              visual_ok: log.visual_ok,
+                              pressure: log.pressure,
+                              notes: log.notes,
+                              corrective_action: log.corrective_action,
+                              compliance_mode: log.compliance_mode,
+                              user: {
+                                name: 'Unknown User', // Will be filled from actual user data
+                                email: 'unknown@example.com',
+                              },
+                            }}
+                            pdfUrl={log.pdf_url}
+                            variant="link"
+                            size="sm"
                             className="text-sm text-primary hover:text-primary-dark underline"
                           >
                             View PDF
-                          </a>
+                          </PDFDownloadButton>
                         )}
                       </div>
                     </div>
