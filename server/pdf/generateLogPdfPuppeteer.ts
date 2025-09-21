@@ -241,6 +241,43 @@ function generateHtml(logData: any, organization: any, profile: any): string {
   `;
 }
 
+async function uploadPdfToStorage(
+  pdfBuffer: Uint8Array,
+  filename: string,
+  logId: string
+): Promise<string> {
+  const supabase = createAdminClient();
+  
+  // Get log data to determine organization
+  const logData = await loadLogPdfData(logId);
+  const orgId = logData.log.org_id;
+  
+  // Create storage path
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const storagePath = `${orgId}/${year}/${month}/${filename}`;
+  
+  console.log('Uploading PDF to storage path:', storagePath);
+  
+  // Upload PDF buffer to storage
+  const { error } = await supabase.storage
+    .from('log-pdfs')
+    .upload(storagePath, pdfBuffer, {
+      contentType: 'application/pdf',
+      cacheControl: '3600',
+      upsert: false,
+    });
+  
+  if (error) {
+    console.error('Storage upload error:', error);
+    throw new Error(`Failed to upload PDF to storage: ${error.message}`);
+  }
+  
+  console.log('PDF uploaded successfully to:', storagePath);
+  return storagePath;
+}
+
 async function generateSignedUrl(storagePath: string): Promise<string> {
   const supabase = createAdminClient();
   const { data } = await supabase.storage
@@ -266,8 +303,24 @@ export async function generateLogPdfPuppeteer(
     console.log('PDF generation completed successfully');
     console.log('PDF buffer size:', result.pdfBuffer.length);
     console.log('PDF filename:', result.filename);
+    
+    // Upload PDF to storage
+    console.log('Uploading PDF to storage...');
+    const storagePath = await uploadPdfToStorage(result.pdfBuffer, result.filename, logId);
+    console.log('PDF uploaded to storage path:', storagePath);
+    
+    // Generate signed URL
+    const pdfUrl = await generateSignedUrl(storagePath);
+    console.log('Generated signed URL:', pdfUrl);
+    
+    const finalResult = {
+      ...result,
+      storagePath,
+      pdfUrl,
+    };
+    
     console.log('=== PDF GENERATION DEBUG END ===');
-    return result;
+    return finalResult;
   } catch (error) {
     console.error('=== PDF GENERATION ERROR ===');
     console.error('Error generating PDF:', error);
