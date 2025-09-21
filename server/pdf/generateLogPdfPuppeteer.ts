@@ -258,11 +258,16 @@ async function uploadPdfToStorage(
   const storagePath = `${orgId}/${year}/${month}/${filename}`;
   
   console.log('Uploading PDF to storage path:', storagePath);
+  console.log('PDF buffer size:', pdfBuffer.length);
+  console.log('PDF buffer type:', pdfBuffer.constructor.name);
   
-  // Upload PDF buffer to storage
-  const { error } = await supabase.storage
+  // Upload PDF buffer to storage (convert Uint8Array to Buffer)
+  const bufferToUpload = Buffer.from(pdfBuffer);
+  console.log('Converted buffer size:', bufferToUpload.length);
+  
+  const { error, data } = await supabase.storage
     .from('log-pdfs')
-    .upload(storagePath, pdfBuffer, {
+    .upload(storagePath, bufferToUpload, {
       contentType: 'application/pdf',
       cacheControl: '3600',
       upsert: false,
@@ -274,6 +279,7 @@ async function uploadPdfToStorage(
   }
   
   console.log('PDF uploaded successfully to:', storagePath);
+  console.log('Upload result:', data);
   return storagePath;
 }
 
