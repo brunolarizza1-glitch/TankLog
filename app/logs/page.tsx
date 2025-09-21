@@ -268,7 +268,7 @@ export default function LogsPage() {
                               try {
                                 // Create download link
                                 const link = document.createElement('a');
-                                link.href = log.pdf_url;
+                                link.href = log.pdf_url || '';
                                 link.download = `TankLog_Report_${log.tank_id}_${new Date(log.occurred_at)
                                   .toISOString()
                                   .replace('T', '_')

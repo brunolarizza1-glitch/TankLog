@@ -104,7 +104,7 @@ export const sendLogPdfEmail = async (
   logData: Log,
   pdfBuffer: Buffer,
   pdfFilename: string
-) => {
+): Promise<any> => {
   console.log('=== SEND EMAIL DEBUG START ===');
   console.log('To:', to);
   console.log('Log ID:', logData.id);
