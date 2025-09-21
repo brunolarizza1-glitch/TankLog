@@ -257,30 +257,41 @@ export default function LogsPage() {
                           Edit Log
                         </button>
                         {log.pdf_url && (
-                          <PDFDownloadButton
-                            log={{
-                              id: log.id,
-                              site: log.site,
-                              tank_id: log.tank_id,
-                              occurred_at: log.occurred_at,
-                              leak_check: log.leak_check,
-                              visual_ok: log.visual_ok,
-                              pressure: log.pressure,
-                              notes: log.notes,
-                              corrective_action: log.corrective_action,
-                              compliance_mode: log.compliance_mode,
-                              user: {
-                                name: 'Unknown User', // Will be filled from actual user data
-                                email: 'unknown@example.com',
-                              },
+                          <button
+                            type="button"
+                            onClick={async (e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              console.log('🔍 PDF Download: Button clicked for log', log.id);
+                              console.log('🔍 PDF Download: PDF URL:', log.pdf_url);
+                              
+                              try {
+                                // Create download link
+                                const link = document.createElement('a');
+                                link.href = log.pdf_url;
+                                link.download = `TankLog_Report_${log.tank_id}_${new Date(log.occurred_at)
+                                  .toISOString()
+                                  .replace('T', '_')
+                                  .replace(/\.\d{3}Z$/, '')
+                                  .replace(/:/g, '-')}.pdf`;
+                                link.target = '_blank';
+                                link.rel = 'noopener noreferrer';
+                                
+                                // Add to DOM, click, then remove
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                
+                                console.log('✅ PDF Download: Download initiated');
+                              } catch (error) {
+                                console.error('❌ PDF Download: Error:', error);
+                                alert('Failed to download PDF: ' + (error instanceof Error ? error.message : 'Unknown error'));
+                              }
                             }}
-                            pdfUrl={log.pdf_url}
-                            variant="link"
-                            size="sm"
                             className="text-sm text-primary hover:text-primary-dark underline"
                           >
                             View PDF
-                          </PDFDownloadButton>
+                          </button>
                         )}
                       </div>
                     </div>

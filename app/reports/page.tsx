@@ -359,46 +359,70 @@ export default function ReportsPage() {
                               <div onClick={(e) => e.stopPropagation()}>
                                 <button
                                   type="button"
-                                  onClick={(e) => {
+                                  onClick={async (e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    console.log('🔍 Simple PDF Test: Button clicked for log', log.id);
-                                    console.log('🔍 Simple PDF Test: PDF URL:', log.pdf_url);
-                                    console.log('🔍 Simple PDF Test: Signed URL:', pdfUrls[log.id]);
+                                    console.log('🔍 PDF Download: Button clicked for log', log.id);
+                                    console.log('🔍 PDF Download: PDF URL:', log.pdf_url);
+                                    console.log('🔍 PDF Download: Signed URL:', pdfUrls[log.id]);
                                     
-                                    // Simple test - just open the PDF in a new tab
-                                    const url = pdfUrls[log.id] || log.pdf_url;
-                                    if (url) {
-                                      window.open(url, '_blank');
-                                    } else {
-                                      alert('No PDF URL available');
+                                    try {
+                                      // Get the URL to use
+                                      let url = pdfUrls[log.id] || log.pdf_url;
+                                      
+                                      // If no signed URL, try to generate one
+                                      if (!pdfUrls[log.id]) {
+                                        console.log('🔍 PDF Download: Generating signed URL...');
+                                        const response = await fetch('/api/generate-pdf-urls', {
+                                          method: 'POST',
+                                          headers: {
+                                            'Content-Type': 'application/json',
+                                          },
+                                          body: JSON.stringify({
+                                            pdfPaths: [{ logId: log.id, pdfPath: log.pdf_url }],
+                                          }),
+                                        });
+                                        
+                                        if (response.ok) {
+                                          const data = await response.json();
+                                          url = data.urls[log.id] || log.pdf_url;
+                                          console.log('🔍 PDF Download: Generated signed URL:', url);
+                                        } else {
+                                          console.log('🔍 PDF Download: Failed to generate signed URL, using direct URL');
+                                        }
+                                      }
+                                      
+                                      if (url) {
+                                        // Create download link
+                                        const link = document.createElement('a');
+                                        link.href = url;
+                                        link.download = `TankLog_Report_${log.tank_id}_${new Date(log.occurred_at)
+                                          .toISOString()
+                                          .replace('T', '_')
+                                          .replace(/\.\d{3}Z$/, '')
+                                          .replace(/:/g, '-')}.pdf`;
+                                        link.target = '_blank';
+                                        link.rel = 'noopener noreferrer';
+                                        
+                                        // Add to DOM, click, then remove
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                        
+                                        console.log('✅ PDF Download: Download initiated');
+                                      } else {
+                                        console.error('❌ PDF Download: No URL available');
+                                        alert('No PDF URL available');
+                                      }
+                                    } catch (error) {
+                                      console.error('❌ PDF Download: Error:', error);
+                                      alert('Failed to download PDF: ' + (error instanceof Error ? error.message : 'Unknown error'));
                                     }
                                   }}
                                   className="text-primary hover:text-primary-dark underline text-sm"
                                 >
-                                  PDF Test
-                                </button>
-                                <PDFDownloadButton
-                                  log={{
-                                    id: log.id,
-                                    site: log.site,
-                                    tank_id: log.tank_id,
-                                    occurred_at: log.occurred_at,
-                                    leak_check: log.leak_check,
-                                    visual_ok: log.visual_ok,
-                                    pressure: log.pressure,
-                                    notes: log.notes,
-                                    corrective_action: log.corrective_action,
-                                    compliance_mode: log.compliance_mode,
-                                    user: log.user,
-                                  }}
-                                  pdfUrl={pdfUrls[log.id] || log.pdf_url}
-                                  variant="link"
-                                  size="sm"
-                                  className="text-primary hover:text-primary-dark underline ml-2"
-                                >
                                   PDF
-                                </PDFDownloadButton>
+                                </button>
                                 <div className="text-xs text-gray-400 mt-1">
                                   Debug: {pdfUrls[log.id] ? 'Signed' : 'Direct'}
                                 </div>
