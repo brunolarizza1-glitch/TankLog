@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import PDFDownloadButton from '@/components/PDFDownloadButton';
+import { Log } from '@/server/db';
 
 interface ReportData {
   totalLogs: number;
   logsThisMonth: number;
   complianceRate: number;
-  logs: any[];
+  logs: Log[];
 }
 
 export default function SimpleTestPage() {
@@ -47,7 +48,7 @@ export default function SimpleTestPage() {
         <div className="mt-4">
           <h2 className="text-lg font-semibold mb-2">Sample Logs:</h2>
           <div className="space-y-2">
-            {data.logs.slice(0, 5).map((log: any) => (
+            {data.logs.slice(0, 5).map((log: Log) => (
               <div key={log.id} className="border p-2 rounded">
                 <p>
                   <strong>Site:</strong> {log.site}
@@ -96,4 +97,3 @@ export default function SimpleTestPage() {
     </div>
   );
 }
-

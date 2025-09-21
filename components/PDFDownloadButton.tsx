@@ -36,7 +36,7 @@ export default function PDFDownloadButton({
     // Prevent default behavior and event propagation
     e.preventDefault();
     e.stopPropagation();
-    
+
     console.log('🔍 PDF Button Debug: Prevented default behavior');
 
     // Clear previous error
@@ -55,12 +55,14 @@ export default function PDFDownloadButton({
       // If we have a PDF URL, try downloading from URL first
       if (pdfUrl) {
         console.log('🔍 PDF Button Debug: Using PDF URL method');
-        const filename = `TankLog_Report_${log.tank_id}_${new Date(log.occurred_at)
+        const filename = `TankLog_Report_${log.tank_id}_${new Date(
+          log.occurred_at
+        )
           .toISOString()
           .replace('T', '_')
           .replace(/\.\d{3}Z$/, '')
           .replace(/:/g, '-')}.pdf`;
-        
+
         await downloadPdfFromUrl(pdfUrl, filename);
       } else {
         console.log('🔍 PDF Button Debug: Using client-side PDF generation');
@@ -80,8 +82,9 @@ export default function PDFDownloadButton({
   };
 
   const getButtonClasses = () => {
-    const baseClasses = 'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-    
+    const baseClasses =
+      'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+
     const sizeClasses = {
       sm: 'px-2 py-1 text-xs',
       md: 'px-3 py-2 text-sm',
@@ -89,7 +92,8 @@ export default function PDFDownloadButton({
     };
 
     const variantClasses = {
-      button: 'bg-primary text-white hover:bg-primary-dark focus:ring-primary rounded-md',
+      button:
+        'bg-primary text-white hover:bg-primary-dark focus:ring-primary rounded-md',
       link: 'text-primary hover:text-primary-dark underline bg-transparent',
       icon: 'p-2 text-primary hover:text-primary-dark rounded-md hover:bg-gray-100',
     };

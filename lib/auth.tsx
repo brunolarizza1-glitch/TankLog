@@ -142,7 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithDemo = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: 'demo@tanklog.com',
       password: 'demo123',
     });

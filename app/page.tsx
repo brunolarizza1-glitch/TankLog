@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 
 export default function HomePage() {
-  const { user, profile, loading, signInWithDemo, isDemo } = useAuth();
+  const { user, profile, loading, signInWithDemo } = useAuth();
   const router = useRouter();
 
   console.log(

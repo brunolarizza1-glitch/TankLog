@@ -5,7 +5,9 @@ interface SkeletonCardProps {
   variant?: 'default' | 'compliance' | 'actions' | 'alerts';
 }
 
-export const SkeletonCard: React.FC<SkeletonCardProps> = ({ variant = 'default' }) => {
+export const SkeletonCard: React.FC<SkeletonCardProps> = ({
+  variant = 'default',
+}) => {
   const renderSkeleton = () => {
     switch (variant) {
       case 'compliance':
@@ -21,7 +23,7 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({ variant = 'default' 
             <div className="h-3 bg-gray-200 rounded w-32 mx-auto animate-pulse"></div>
           </div>
         );
-      
+
       case 'actions':
         return (
           <div className="space-y-6">
@@ -44,7 +46,7 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({ variant = 'default' 
             </div>
           </div>
         );
-      
+
       case 'alerts':
         return (
           <div className="space-y-4">
@@ -53,7 +55,10 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({ variant = 'default' 
             {/* Alert items skeleton */}
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                >
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
                     <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
@@ -64,7 +69,7 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({ variant = 'default' 
             </div>
           </div>
         );
-      
+
       default:
         return (
           <div className="space-y-4">

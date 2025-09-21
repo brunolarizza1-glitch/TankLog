@@ -341,11 +341,11 @@ export default function ReportsPage() {
                             onClick={async (e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              
+
                               try {
                                 // Get the URL to use
                                 let url = pdfUrls[log.id] || log.pdf_url;
-                                
+
                                 // If no signed URL, try to generate one
                                 if (!pdfUrls[log.id]) {
                                   const response = await fetch(
@@ -365,13 +365,13 @@ export default function ReportsPage() {
                                       }),
                                     }
                                   );
-                                  
+
                                   if (response.ok) {
                                     const data = await response.json();
                                     url = data.urls[log.id] || log.pdf_url;
                                   }
                                 }
-                                
+
                                 if (url) {
                                   // Create download link
                                   const link = document.createElement('a');
@@ -385,7 +385,7 @@ export default function ReportsPage() {
                                     .replace(/:/g, '-')}.pdf`;
                                   link.target = '_blank';
                                   link.rel = 'noopener noreferrer';
-                                  
+
                                   // Add to DOM, click, then remove
                                   document.body.appendChild(link);
                                   link.click();
@@ -407,9 +407,7 @@ export default function ReportsPage() {
                             PDF
                           </button>
                         ) : (
-                          <span className="text-gray-400 text-sm">
-                            No PDF
-                          </span>
+                          <span className="text-gray-400 text-sm">No PDF</span>
                         )}
                       </td>
                     </tr>

@@ -101,8 +101,8 @@ export default function LogDetailPage() {
             Log not found
           </h2>
           <p className="text-gray-600 mb-4">
-            The log you&apos;re looking for doesn&apos;t exist or you don&apos;t have
-            permission to view it.
+            The log you&apos;re looking for doesn&apos;t exist or you don&apos;t
+            have permission to view it.
           </p>
           <button
             onClick={() => router.push('/logs')}
@@ -115,7 +115,9 @@ export default function LogDetailPage() {
     );
   }
 
-  const complianceInfo = getComplianceModeInfo(log.compliance_mode as ComplianceMode);
+  const complianceInfo = getComplianceModeInfo(
+    log.compliance_mode as ComplianceMode
+  );
   const hasFailures = !log.leak_check || log.visual_ok === false;
 
   return (
@@ -319,5 +321,3 @@ export default function LogDetailPage() {
     </AppShell>
   );
 }
-
-

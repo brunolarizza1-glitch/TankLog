@@ -262,30 +262,45 @@ export default function LogsPage() {
                             onClick={async (e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              console.log('🔍 PDF Download: Button clicked for log', log.id);
-                              console.log('🔍 PDF Download: PDF URL:', log.pdf_url);
-                              
+                              console.log(
+                                '🔍 PDF Download: Button clicked for log',
+                                log.id
+                              );
+                              console.log(
+                                '🔍 PDF Download: PDF URL:',
+                                log.pdf_url
+                              );
+
                               try {
                                 // Create download link
                                 const link = document.createElement('a');
                                 link.href = log.pdf_url || '';
-                                link.download = `TankLog_Report_${log.tank_id}_${new Date(log.occurred_at)
+                                link.download = `TankLog_Report_${log.tank_id}_${new Date(
+                                  log.occurred_at
+                                )
                                   .toISOString()
                                   .replace('T', '_')
                                   .replace(/\.\d{3}Z$/, '')
                                   .replace(/:/g, '-')}.pdf`;
                                 link.target = '_blank';
                                 link.rel = 'noopener noreferrer';
-                                
+
                                 // Add to DOM, click, then remove
                                 document.body.appendChild(link);
                                 link.click();
                                 document.body.removeChild(link);
-                                
-                                console.log('✅ PDF Download: Download initiated');
+
+                                console.log(
+                                  '✅ PDF Download: Download initiated'
+                                );
                               } catch (error) {
                                 console.error('❌ PDF Download: Error:', error);
-                                alert('Failed to download PDF: ' + (error instanceof Error ? error.message : 'Unknown error'));
+                                alert(
+                                  'Failed to download PDF: ' +
+                                    (error instanceof Error
+                                      ? error.message
+                                      : 'Unknown error')
+                                );
                               }
                             }}
                             className="text-sm text-primary hover:text-primary-dark underline"

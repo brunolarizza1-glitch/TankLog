@@ -35,7 +35,10 @@ export interface PdfDownloadOptions {
 }
 
 export class PdfDownloadError extends Error {
-  constructor(message: string, public code: string) {
+  constructor(
+    message: string,
+    public code: string
+  ) {
     super(message);
     this.name = 'PdfDownloadError';
   }
@@ -61,9 +64,11 @@ export class PdfDownloader {
   private checkJsPdfAvailability(): boolean {
     try {
       console.log('🔍 PDF Debug: Checking jsPDF availability...');
-      
+
       if (typeof window === 'undefined') {
-        console.error('❌ PDF Debug: jsPDF not available - running on server side');
+        console.error(
+          '❌ PDF Debug: jsPDF not available - running on server side'
+        );
         return false;
       }
 
@@ -85,13 +90,13 @@ export class PdfDownloader {
    */
   private generateBasicPdf(log: LogData): jsPDF {
     console.log('🔍 PDF Debug: Generating basic PDF...');
-    
+
     const doc = new jsPDF();
-    
+
     // Add title
     doc.setFontSize(20);
     doc.text('TankLog Inspection Report', 20, 20);
-    
+
     // Add basic info
     doc.setFontSize(12);
     doc.text(`Site: ${log.site}`, 20, 40);
@@ -99,7 +104,7 @@ export class PdfDownloader {
     doc.text(`Date: ${new Date(log.occurred_at).toLocaleDateString()}`, 20, 60);
     doc.text(`Inspector: ${log.user.name}`, 20, 70);
     doc.text(`Status: ${log.leak_check ? 'PASS' : 'FAIL'}`, 20, 80);
-    
+
     console.log('✅ PDF Debug: Basic PDF generated successfully');
     return doc;
   }
@@ -109,13 +114,13 @@ export class PdfDownloader {
    */
   private generateComprehensivePdf(log: LogData): jsPDF {
     console.log('🔍 PDF Debug: Generating comprehensive PDF...');
-    
+
     const doc = new jsPDF();
-    
+
     // Header
     doc.setFontSize(20);
     doc.text('TankLog Inspection Report', 20, 20);
-    
+
     // Basic info section
     doc.setFontSize(12);
     const basicInfo = [
@@ -126,11 +131,11 @@ export class PdfDownloader {
       ['Inspector', log.user.name],
       ['Email', log.user.email],
     ];
-    
+
     if (log.pressure) {
       basicInfo.push(['Pressure', log.pressure]);
     }
-    
+
     // Add basic info table
     (doc as any).autoTable({
       startY: 40,
@@ -144,13 +149,16 @@ export class PdfDownloader {
     const inspectionResults = [
       ['Leak Check', log.leak_check ? '✓ PASS' : '✗ FAIL'],
     ];
-    
+
     if (log.visual_ok !== undefined) {
-      inspectionResults.push(['Visual Inspection', log.visual_ok ? '✓ All OK' : '✗ Issues Found']);
+      inspectionResults.push([
+        'Visual Inspection',
+        log.visual_ok ? '✓ All OK' : '✗ Issues Found',
+      ]);
     }
-    
+
     inspectionResults.push(['Compliance Mode', log.compliance_mode]);
-    
+
     (doc as any).autoTable({
       startY: (doc as any).lastAutoTable.finalY + 20,
       head: [['Inspection Result', 'Status']],
@@ -220,7 +228,9 @@ export class PdfDownloader {
 
     // Prevent multiple simultaneous downloads
     if (this.isGenerating) {
-      console.warn('⚠️ PDF Debug: PDF generation already in progress, skipping...');
+      console.warn(
+        '⚠️ PDF Debug: PDF generation already in progress, skipping...'
+      );
       onError?.('PDF generation already in progress');
       return;
     }
@@ -231,27 +241,38 @@ export class PdfDownloader {
 
       // Check jsPDF availability
       if (!this.checkJsPdfAvailability()) {
-        throw new PdfDownloadError('jsPDF library not available', 'JSPDF_UNAVAILABLE');
+        throw new PdfDownloadError(
+          'jsPDF library not available',
+          'JSPDF_UNAVAILABLE'
+        );
       }
 
       // Validate log data
       if (!log || !log.id) {
-        throw new PdfDownloadError('Invalid log data provided', 'INVALID_LOG_DATA');
+        throw new PdfDownloadError(
+          'Invalid log data provided',
+          'INVALID_LOG_DATA'
+        );
       }
 
       console.log('🔍 PDF Debug: Generating PDF...');
-      
+
       // Generate PDF (start with basic, then comprehensive)
       let doc: jsPDF;
       try {
         doc = this.generateComprehensivePdf(log);
       } catch (error) {
-        console.warn('⚠️ PDF Debug: Comprehensive PDF failed, falling back to basic PDF:', error);
+        console.warn(
+          '⚠️ PDF Debug: Comprehensive PDF failed, falling back to basic PDF:',
+          error
+        );
         doc = this.generateBasicPdf(log);
       }
 
       // Generate filename
-      const filename = `TankLog_Report_${log.tank_id}_${new Date(log.occurred_at)
+      const filename = `TankLog_Report_${log.tank_id}_${new Date(
+        log.occurred_at
+      )
         .toISOString()
         .replace('T', '_')
         .replace(/\.\d{3}Z$/, '')
@@ -262,22 +283,21 @@ export class PdfDownloader {
       // Save PDF
       console.log('🔍 PDF Debug: Saving PDF...');
       doc.save(filename);
-      
+
       console.log('✅ PDF Debug: PDF download completed successfully');
       onSuccess?.();
-      
     } catch (error) {
       console.error('❌ PDF Debug: PDF generation failed:', error);
-      
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Unknown error occurred during PDF generation';
-      
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Unknown error occurred during PDF generation';
+
       onError?.(errorMessage);
-      
+
       // Show user-friendly error message
       alert(`Failed to generate PDF: ${errorMessage}`);
-      
     } finally {
       this.isGenerating = false;
       onLoading?.(false);
@@ -290,23 +310,26 @@ export class PdfDownloader {
    */
   async downloadPdfFromUrl(url: string, filename: string): Promise<void> {
     console.log('🔍 PDF Debug: Downloading PDF from URL:', url);
-    
+
     try {
       const link = document.createElement('a');
       link.href = url;
       link.download = filename;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
-      
+
       // Add to DOM, click, then remove
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       console.log('✅ PDF Debug: PDF downloaded from URL successfully');
     } catch (error) {
       console.error('❌ PDF Debug: Failed to download PDF from URL:', error);
-      throw new PdfDownloadError('Failed to download PDF from URL', 'DOWNLOAD_FAILED');
+      throw new PdfDownloadError(
+        'Failed to download PDF from URL',
+        'DOWNLOAD_FAILED'
+      );
     }
   }
 }

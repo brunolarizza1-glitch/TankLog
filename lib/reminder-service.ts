@@ -23,6 +23,25 @@ export interface ReminderTemplate {
   text: string;
 }
 
+export interface ReminderCommonData {
+  actionId: string;
+  itemName: string;
+  site: string;
+  tankId: string;
+  description: string;
+  requiredAction: string;
+  dueDate: string;
+  dueTime: string;
+  actionUrl: string;
+  unsubscribeUrl: string;
+}
+
+export interface ReminderWithAction {
+  id: string;
+  reminder_type: ReminderType;
+  corrective_action: CorrectiveActionWithDetails;
+}
+
 export interface ReminderSchedule {
   severity: 'immediate' | '24hr' | '7day';
   reminders: {
@@ -140,7 +159,7 @@ export class ReminderService {
   /**
    * Send a specific reminder
    */
-  private async sendReminder(reminder: any): Promise<void> {
+  private async sendReminder(reminder: ReminderWithAction): Promise<void> {
     const action = reminder.corrective_action;
     if (!action) {
       throw new Error('Corrective action not found for reminder');
@@ -170,7 +189,8 @@ export class ReminderService {
 
     // Send email
     const emailData = {
-      to: action.technician?.email || action.assigned_to,
+      to:
+        action.technician?.email || action.assigned_to || 'unknown@example.com',
       subject: template.subject,
       htmlBody: template.html,
       textBody: template.text,
@@ -450,7 +470,9 @@ This is an automated escalation notification. Please ensure all overdue correcti
   /**
    * Get initial notification template
    */
-  private getInitialNotificationTemplate(data: any): ReminderTemplate {
+  private getInitialNotificationTemplate(
+    data: ReminderCommonData
+  ): ReminderTemplate {
     const subject = `Corrective Action Required: ${data.itemName} - ${data.site}`;
 
     const html = `
@@ -527,7 +549,10 @@ Unsubscribe: ${data.unsubscribeUrl}
   /**
    * Get due soon template
    */
-  private getDueSoonTemplate(data: any, severity: string): ReminderTemplate {
+  private getDueSoonTemplate(
+    data: ReminderCommonData,
+    severity: string
+  ): ReminderTemplate {
     const hoursLeft = Math.ceil(
       (new Date(data.dueDate).getTime() - new Date().getTime()) /
         (1000 * 60 * 60)
@@ -607,7 +632,7 @@ Unsubscribe: ${data.unsubscribeUrl}
   /**
    * Get overdue template
    */
-  private getOverdueTemplate(data: any): ReminderTemplate {
+  private getOverdueTemplate(data: ReminderCommonData): ReminderTemplate {
     const subject = `URGENT: Corrective Action OVERDUE - ${data.itemName} - ${data.site}`;
 
     const html = `

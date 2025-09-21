@@ -16,9 +16,8 @@ export default function MobileCorrectiveActionsPage() {
   const [selectedAction, setSelectedAction] =
     useState<CorrectiveActionWithDetails | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [filter, setFilter] = useState<
-    'all' | 'overdue' | 'due_soon' | 'on_track'
-  >('all');
+  type FilterType = 'all' | 'overdue' | 'due_soon' | 'on_track';
+  const [filter, setFilter] = useState<FilterType>('all');
 
   useEffect(() => {
     if (!user) {
@@ -32,7 +31,7 @@ export default function MobileCorrectiveActionsPage() {
     setShowCompletionModal(true);
   };
 
-  const handleMarkCompleted = (actionId: string) => {
+  const handleMarkCompleted = () => {
     // This will be handled by the CorrectiveActionsList component
     setShowCompletionModal(true);
   };
@@ -127,7 +126,7 @@ export default function MobileCorrectiveActionsPage() {
             ].map(({ key, label, icon }) => (
               <button
                 key={key}
-                onClick={() => setFilter(key as any)}
+                onClick={() => setFilter(key as FilterType)}
                 className={`px-3 py-2 rounded-full text-sm whitespace-nowrap flex items-center space-x-1 ${
                   filter === key
                     ? 'bg-primary text-white'

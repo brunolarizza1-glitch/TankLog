@@ -11,6 +11,8 @@ import {
   SkeletonCard,
   EmptyState,
 } from '@/components/dashboard';
+import { CorrectiveActionWithDetails } from '@/lib/corrective-actions';
+import { Log } from '@/server/db';
 
 export default function DashboardPage() {
   const { user, profile, loading, isDemo } = useAuth();
@@ -79,7 +81,7 @@ export default function DashboardPage() {
       const response = await fetch('/api/corrective-actions');
       if (response.ok) {
         const data = await response.json();
-        const actions = data.actions || [];
+        const actions: CorrectiveActionWithDetails[] = data.actions || [];
 
         const now = new Date();
         const today = new Date(
@@ -89,26 +91,31 @@ export default function DashboardPage() {
         );
 
         const overdueCount = actions.filter(
-          (action: any) =>
+          (action: CorrectiveActionWithDetails) =>
             new Date(action.due_date) < now && action.status !== 'completed'
         ).length;
 
-        const dueSoonCount = actions.filter((action: any) => {
-          const dueDate = new Date(action.due_date);
-          const daysUntilDue = Math.ceil(
-            (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-          );
-          return (
-            daysUntilDue <= 3 &&
-            daysUntilDue > 0 &&
-            action.status !== 'completed'
-          );
-        }).length;
+        const dueSoonCount = actions.filter(
+          (action: CorrectiveActionWithDetails) => {
+            const dueDate = new Date(action.due_date);
+            const daysUntilDue = Math.ceil(
+              (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+            );
+            return (
+              daysUntilDue <= 3 &&
+              daysUntilDue > 0 &&
+              action.status !== 'completed'
+            );
+          }
+        ).length;
 
-        const completedToday = actions.filter((action: any) => {
-          const completedAt = new Date(action.completed_at);
-          return completedAt >= today && action.status === 'completed';
-        }).length;
+        const completedToday = actions.filter(
+          (action: CorrectiveActionWithDetails) => {
+            if (!action.completed_at) return false;
+            const completedAt = new Date(action.completed_at);
+            return completedAt >= today && action.status === 'completed';
+          }
+        ).length;
 
         setAlertData({
           overdueCount,
@@ -127,10 +134,10 @@ export default function DashboardPage() {
       const response = await fetch('/api/logs');
       if (response.ok) {
         const data = await response.json();
-        const logs = data.logs?.slice(0, 5) || [];
+        const logs: Log[] = data.logs?.slice(0, 5) || [];
 
         // Convert logs to activity items
-        const activity = logs.map((log: any) => ({
+        const activity = logs.map((log: Log) => ({
           id: log.id,
           action: `Log completed at ${log.site || log.vehicle_id || 'Unknown Site'}`,
           timestamp: log.occurred_at,
@@ -210,7 +217,7 @@ export default function DashboardPage() {
                 <h3 className="text-sm font-medium text-blue-800">Demo Mode</h3>
                 <div className="mt-2 text-sm text-blue-700">
                   <p>
-                    You're viewing TankLog with sample data.
+                    You&apos;re viewing TankLog with sample data.
                     <a
                       href="/signin"
                       className="font-medium underline hover:text-blue-600 ml-1"

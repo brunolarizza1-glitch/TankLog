@@ -16,11 +16,8 @@ export default function CorrectiveActionsPage() {
     useState<CorrectiveActionWithDetails | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [filter] = useState<'all' | 'overdue' | 'due_soon' | 'on_track'>('all');
-  const {
-    actions,
-    pendingChanges,
-    completeAction,
-  } = useOfflineCorrectiveActions();
+  const { actions, pendingChanges, completeAction } =
+    useOfflineCorrectiveActions();
 
   const handleActionClick = (action: CorrectiveActionWithDetails) => {
     setSelectedAction(action);

@@ -36,11 +36,13 @@ export default function PDFTestPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">PDF Download Test Page</h1>
-        
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">
+          PDF Download Test Page
+        </h1>
+
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Test Buttons</h2>
-          
+
           <div className="space-y-4">
             <div>
               <button
@@ -56,7 +58,7 @@ export default function PDFTestPage() {
                 PDF Test
               </button>
             </div>
-            
+
             {testResult && (
               <div className="p-4 bg-gray-100 rounded">
                 <p className="text-gray-700">{testResult}</p>
@@ -66,11 +68,15 @@ export default function PDFTestPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">PDF Download Button Test</h2>
-          
+          <h2 className="text-xl font-semibold mb-4">
+            PDF Download Button Test
+          </h2>
+
           <div className="space-y-4">
             <div>
-              <h3 className="font-medium mb-2">Client-side PDF Generation (no URL):</h3>
+              <h3 className="font-medium mb-2">
+                Client-side PDF Generation (no URL):
+              </h3>
               <PDFDownloadButton
                 log={testLog}
                 variant="button"
@@ -80,7 +86,7 @@ export default function PDFTestPage() {
                 Generate PDF
               </PDFDownloadButton>
             </div>
-            
+
             <div>
               <h3 className="font-medium mb-2">PDF Download from URL:</h3>
               <PDFDownloadButton
@@ -93,7 +99,7 @@ export default function PDFTestPage() {
                 Download PDF
               </PDFDownloadButton>
             </div>
-            
+
             <div>
               <h3 className="font-medium mb-2">Link Style PDF Button:</h3>
               <PDFDownloadButton
