@@ -30,6 +30,8 @@ export default function PDFDownloadButton({
       target: e.target,
       currentTarget: e.currentTarget,
     });
+    console.log('🔍 PDF Button Debug: Log data:', log);
+    console.log('🔍 PDF Button Debug: PDF URL:', pdfUrl);
 
     // Prevent default behavior and event propagation
     e.preventDefault();

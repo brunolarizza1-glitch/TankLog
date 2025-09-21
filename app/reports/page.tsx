@@ -356,27 +356,53 @@ export default function ReportsPage() {
                               View
                             </a>
                             {log.pdf_url ? (
-                              <PDFDownloadButton
-                                log={{
-                                  id: log.id,
-                                  site: log.site,
-                                  tank_id: log.tank_id,
-                                  occurred_at: log.occurred_at,
-                                  leak_check: log.leak_check,
-                                  visual_ok: log.visual_ok,
-                                  pressure: log.pressure,
-                                  notes: log.notes,
-                                  corrective_action: log.corrective_action,
-                                  compliance_mode: log.compliance_mode,
-                                  user: log.user,
-                                }}
-                                pdfUrl={pdfUrls[log.id] || log.pdf_url}
-                                variant="link"
-                                size="sm"
-                                className="text-primary hover:text-primary-dark underline"
-                              >
-                                PDF
-                              </PDFDownloadButton>
+                              <div onClick={(e) => e.stopPropagation()}>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('🔍 Simple PDF Test: Button clicked for log', log.id);
+                                    console.log('🔍 Simple PDF Test: PDF URL:', log.pdf_url);
+                                    console.log('🔍 Simple PDF Test: Signed URL:', pdfUrls[log.id]);
+                                    
+                                    // Simple test - just open the PDF in a new tab
+                                    const url = pdfUrls[log.id] || log.pdf_url;
+                                    if (url) {
+                                      window.open(url, '_blank');
+                                    } else {
+                                      alert('No PDF URL available');
+                                    }
+                                  }}
+                                  className="text-primary hover:text-primary-dark underline text-sm"
+                                >
+                                  PDF Test
+                                </button>
+                                <PDFDownloadButton
+                                  log={{
+                                    id: log.id,
+                                    site: log.site,
+                                    tank_id: log.tank_id,
+                                    occurred_at: log.occurred_at,
+                                    leak_check: log.leak_check,
+                                    visual_ok: log.visual_ok,
+                                    pressure: log.pressure,
+                                    notes: log.notes,
+                                    corrective_action: log.corrective_action,
+                                    compliance_mode: log.compliance_mode,
+                                    user: log.user,
+                                  }}
+                                  pdfUrl={pdfUrls[log.id] || log.pdf_url}
+                                  variant="link"
+                                  size="sm"
+                                  className="text-primary hover:text-primary-dark underline ml-2"
+                                >
+                                  PDF
+                                </PDFDownloadButton>
+                                <div className="text-xs text-gray-400 mt-1">
+                                  Debug: {pdfUrls[log.id] ? 'Signed' : 'Direct'}
+                                </div>
+                              </div>
                             ) : (
                               <span className="text-gray-400 text-sm">
                                 No PDF
