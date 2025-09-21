@@ -44,7 +44,6 @@ export default function ReportsPage() {
   >('all');
   const [pdfUrls, setPdfUrls] = useState<Record<string, string>>({});
 
-  // Generate signed URLs for PDFs
   const generatePdfUrls = async (logs: Log[]) => {
     console.log('🔍 Generating PDF URLs for', logs.length, 'logs');
 
@@ -229,266 +228,218 @@ export default function ReportsPage() {
         </div>
 
         {/* Logs Table */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Detailed Logs ({filteredLogs.length})
-            </h3>
-            <div className="flex items-center space-x-4">
-              {/* Search */}
-              <input
-                type="text"
-                placeholder="Search logs..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-              {/* Status Filter */}
-              <select
-                value={statusFilter}
-                onChange={(e) =>
-                  setStatusFilter(e.target.value as 'all' | 'pass' | 'fail')
-                }
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                <option value="all">All Status</option>
-                <option value="pass">Pass</option>
-                <option value="fail">Fail</option>
-              </select>
-              {/* Date Filter */}
-              <select
-                value={dateFilter}
-                onChange={(e) =>
-                  setDateFilter(
-                    e.target.value as 'all' | 'week' | 'month' | 'year'
-                  )
-                }
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                <option value="all">All Time</option>
-                <option value="week">This Week</option>
-                <option value="month">This Month</option>
-                <option value="year">This Year</option>
-              </select>
+        <Card className="overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Inspection Logs
+              </h2>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  placeholder="Search logs..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+                <select
+                  value={statusFilter}
+                  onChange={(e) =>
+                    setStatusFilter(e.target.value as 'all' | 'pass' | 'fail')
+                  }
+                  className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="all">All Status</option>
+                  <option value="pass">Pass</option>
+                  <option value="fail">Fail</option>
+                </select>
+                <select
+                  value={dateFilter}
+                  onChange={(e) =>
+                    setDateFilter(
+                      e.target.value as 'all' | 'week' | 'month' | 'year'
+                    )
+                  }
+                  className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="all">All Time</option>
+                  <option value="week">This Week</option>
+                  <option value="month">This Month</option>
+                  <option value="year">This Year</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          {filteredLogs.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No logs found matching your criteria.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Site/Tank
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Inspector
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Compliance
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredLogs.map((log) => {
-                    const hasFailures =
-                      !log.leak_check || log.visual_ok === false;
-                    const statusColor = hasFailures
-                      ? 'text-red-600'
-                      : 'text-green-600';
-                    const statusText = hasFailures ? 'Fail' : 'Pass';
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Site
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tank ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Inspector
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Compliance
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredLogs.map((log) => {
+                  const logDate = new Date(log.occurred_at);
+                  const status =
+                    log.leak_check && (log.visual_ok === null || log.visual_ok)
+                      ? 'pass'
+                      : 'fail';
 
-                    return (
-                      <tr key={log.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {log.site || 'Unnamed Site'}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              Tank: {log.tank_id}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            {log.user.name}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {log.user.email}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {new Date(log.occurred_at).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColor} bg-opacity-10`}
-                          >
-                            {statusText}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {log.compliance_mode}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-2">
-                            {log.pdf_url ? (
-                              <button
-                                type="button"
-                                onClick={async (e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-
-                                  try {
-                                    // Get the URL to use
-                                    let url = pdfUrls[log.id] || log.pdf_url;
-
-                                    // If no signed URL, try to generate one
-                                    if (!pdfUrls[log.id]) {
-                                      const response = await fetch(
-                                        '/api/generate-pdf-urls',
-                                        {
-                                          method: 'POST',
-                                          headers: {
-                                            'Content-Type': 'application/json',
+                  return (
+                    <tr key={log.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {logDate.toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {log.site}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {log.tank_id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {log.user.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            status === 'pass'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}
+                        >
+                          {status === 'pass' ? 'Pass' : 'Fail'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {log.compliance_mode}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        {log.pdf_url ? (
+                          <button
+                            type="button"
+                            onClick={async (e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              
+                              try {
+                                // Get the URL to use
+                                let url = pdfUrls[log.id] || log.pdf_url;
+                                
+                                // If no signed URL, try to generate one
+                                if (!pdfUrls[log.id]) {
+                                  const response = await fetch(
+                                    '/api/generate-pdf-urls',
+                                    {
+                                      method: 'POST',
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                      },
+                                      body: JSON.stringify({
+                                        pdfPaths: [
+                                          {
+                                            logId: log.id,
+                                            pdfPath: log.pdf_url,
                                           },
-                                          body: JSON.stringify({
-                                            pdfPaths: [
-                                              {
-                                                logId: log.id,
-                                                pdfPath: log.pdf_url,
-                                              },
-                                            ],
-                                          }),
-                                        }
-                                      );
-
-                                      if (response.ok) {
-                                        const data = await response.json();
-                                        url = data.urls[log.id] || log.pdf_url;
-                                      }
+                                        ],
+                                      }),
                                     }
-
-                                    if (url) {
-                                      // Create download link
-                                      const link = document.createElement('a');
-                                      link.href = url;
-                                      link.download = `TankLog_Report_${log.tank_id}_${new Date(
-                                        log.occurred_at
-                                      )
-                                        .toISOString()
-                                        .replace('T', '_')
-                                        .replace(/\.\d{3}Z$/, '')
-                                        .replace(/:/g, '-')}.pdf`;
-                                      link.target = '_blank';
-                                      link.rel = 'noopener noreferrer';
-
-                                      // Add to DOM, click, then remove
-                                      document.body.appendChild(link);
-                                      link.click();
-                                      document.body.removeChild(link);
-                                    } else {
-                                      alert('No PDF URL available');
-                                    }
-                                  } catch (error) {
-                                    alert(
-                                      'Failed to download PDF: ' +
-                                        (error instanceof Error
-                                          ? error.message
-                                          : 'Unknown error')
-                                    );
+                                  );
+                                  
+                                  if (response.ok) {
+                                    const data = await response.json();
+                                    url = data.urls[log.id] || log.pdf_url;
                                   }
-                                }}
-                                className="text-primary hover:text-primary-dark underline text-sm"
-                              >
-                                PDF
-                              </button>
-                            ) : (
-                              <span className="text-gray-400 text-sm">
-                                No PDF
-                              </span>
-                            )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
-
-        {/* Recent Activity */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Recent Activity
-          </h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between py-2 border-b border-gray-100">
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-gray-600">New log created</span>
-              </div>
-              <span className="text-xs text-gray-500">2 hours ago</span>
-            </div>
-            <div className="flex items-center justify-between py-2 border-b border-gray-100">
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span className="text-sm text-gray-600">
-                  Corrective action required
-                </span>
-              </div>
-              <span className="text-xs text-gray-500">1 day ago</span>
-            </div>
-            <div className="flex items-center justify-between py-2">
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className="text-sm text-gray-600">Report generated</span>
-              </div>
-              <span className="text-xs text-gray-500">3 days ago</span>
-            </div>
+                                }
+                                
+                                if (url) {
+                                  // Create download link
+                                  const link = document.createElement('a');
+                                  link.href = url;
+                                  link.download = `TankLog_Report_${log.tank_id}_${new Date(
+                                    log.occurred_at
+                                  )
+                                    .toISOString()
+                                    .replace('T', '_')
+                                    .replace(/\.\d{3}Z$/, '')
+                                    .replace(/:/g, '-')}.pdf`;
+                                  link.target = '_blank';
+                                  link.rel = 'noopener noreferrer';
+                                  
+                                  // Add to DOM, click, then remove
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                } else {
+                                  alert('No PDF URL available');
+                                }
+                              } catch (error) {
+                                alert(
+                                  'Failed to download PDF: ' +
+                                    (error instanceof Error
+                                      ? error.message
+                                      : 'Unknown error')
+                                );
+                              }
+                            }}
+                            className="text-primary hover:text-primary-dark underline text-sm"
+                          >
+                            PDF
+                          </button>
+                        ) : (
+                          <span className="text-gray-400 text-sm">
+                            No PDF
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </Card>
 
         {/* Export Options */}
         <Card className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Export Data
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button className="flex items-center justify-center space-x-2 py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Export Data
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Download your inspection data in various formats
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                // TODO: Implement CSV export
+                alert('CSV export coming soon!');
+              }}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            >
               <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              <span>Export to PDF</span>
-            </button>
-            <button className="flex items-center justify-center space-x-2 py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-              <svg
-                className="w-5 h-5"
+                className="w-5 h-5 mr-2"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
