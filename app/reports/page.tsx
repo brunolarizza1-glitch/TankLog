@@ -4,7 +4,6 @@ import { useAuth } from '@/lib/auth';
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 import { Card } from '@/components/design-system';
-// import { LogsOverTimeChart, ComplianceTrendsChart } from '@/components/charts';
 
 interface ReportData {
   totalLogs: number;
@@ -45,9 +44,6 @@ export default function ReportsPage() {
   >('all');
   const [pdfUrls, setPdfUrls] = useState<Record<string, string>>({});
 
-  // Chart data processing functions (currently disabled)
-  // const processLogsOverTimeData = () => { ... };
-  // const processComplianceTrendsData = () => { ... };
 
   // Generate signed URLs for PDFs
   const generatePdfUrls = async (logs: Log[]) => {
@@ -233,34 +229,6 @@ export default function ReportsPage() {
           </Card>
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Logs Over Time
-            </h3>
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-              <div className="text-center text-gray-500">
-                <div className="text-lg font-medium">Logs Over Time Chart</div>
-                <div className="text-sm">Chart coming soon</div>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Compliance Trends
-            </h3>
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-              <div className="text-center text-gray-500">
-                <div className="text-lg font-medium">
-                  Compliance Trends Chart
-                </div>
-                <div className="text-sm">Chart coming soon</div>
-              </div>
-            </div>
-          </Card>
-        </div>
 
         {/* Logs Table */}
         <Card className="p-6">
