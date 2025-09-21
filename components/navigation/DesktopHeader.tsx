@@ -36,6 +36,10 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
       settings: 'Settings',
       'settings/compliance': 'Compliance Settings',
       profile: 'Profile',
+      demo: 'Demo',
+      'demo/dashboard': 'Demo Dashboard',
+      'demo/logs': 'Demo Logs',
+      'demo/reports': 'Demo Reports',
     };
 
     return pathSegments.map((segment, index) => {

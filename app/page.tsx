@@ -125,17 +125,27 @@ export default function HomePage() {
           </a>
         </div>
 
-        {/* Sign in CTA */}
-        <div className="text-center space-y-2">
-          <p className="text-sm text-gray-600">
-            Sign in to start tracking your propane usage
-          </p>
-          <a
-            href="/signin"
-            className="inline-block bg-accent text-brand-dark py-3 px-6 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
-          >
-            Sign in to get started
-          </a>
+        {/* Demo and Sign in CTAs */}
+        <div className="text-center space-y-4">
+          <div className="space-y-2">
+            <p className="text-sm text-gray-600">
+              Try TankLog with sample data or sign in to use your own
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a
+                href="/demo"
+                className="inline-block bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
+                Try Demo
+              </a>
+              <a
+                href="/signin"
+                className="inline-block bg-accent text-brand-dark py-3 px-6 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+              >
+                Sign in to get started
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Features preview */}
@@ -145,19 +155,31 @@ export default function HomePage() {
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-accent rounded-full"></div>
               <span className="text-sm text-gray-600">
-                Quick propane level logging
+                Propane tank inspection logging
               </span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-accent rounded-full"></div>
               <span className="text-sm text-gray-600">
-                Usage history and trends
+                Leak detection and visual inspections
               </span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-accent rounded-full"></div>
               <span className="text-sm text-gray-600">
-                PDF reports for compliance
+                Professional PDF reports for compliance
+              </span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-accent rounded-full"></div>
+              <span className="text-sm text-gray-600">
+                Corrective action tracking
+              </span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-accent rounded-full"></div>
+              <span className="text-sm text-gray-600">
+                Regulatory compliance monitoring
               </span>
             </div>
           </div>
