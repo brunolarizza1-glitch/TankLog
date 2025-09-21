@@ -44,7 +44,6 @@ export default function ReportsPage() {
   >('all');
   const [pdfUrls, setPdfUrls] = useState<Record<string, string>>({});
 
-
   // Generate signed URLs for PDFs
   const generatePdfUrls = async (logs: Log[]) => {
     console.log('🔍 Generating PDF URLs for', logs.length, 'logs');
@@ -229,7 +228,6 @@ export default function ReportsPage() {
           </Card>
         </div>
 
-
         {/* Logs Table */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
@@ -348,53 +346,57 @@ export default function ReportsPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
-                            <a
-                              href={`/logs/${log.id}`}
-                              className="text-primary hover:text-primary-dark"
-                            >
-                              View
-                            </a>
                             {log.pdf_url ? (
                               <button
                                 type="button"
                                 onClick={async (e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  
+
                                   try {
                                     // Get the URL to use
                                     let url = pdfUrls[log.id] || log.pdf_url;
-                                    
+
                                     // If no signed URL, try to generate one
                                     if (!pdfUrls[log.id]) {
-                                      const response = await fetch('/api/generate-pdf-urls', {
-                                        method: 'POST',
-                                        headers: {
-                                          'Content-Type': 'application/json',
-                                        },
-                                        body: JSON.stringify({
-                                          pdfPaths: [{ logId: log.id, pdfPath: log.pdf_url }],
-                                        }),
-                                      });
-                                      
+                                      const response = await fetch(
+                                        '/api/generate-pdf-urls',
+                                        {
+                                          method: 'POST',
+                                          headers: {
+                                            'Content-Type': 'application/json',
+                                          },
+                                          body: JSON.stringify({
+                                            pdfPaths: [
+                                              {
+                                                logId: log.id,
+                                                pdfPath: log.pdf_url,
+                                              },
+                                            ],
+                                          }),
+                                        }
+                                      );
+
                                       if (response.ok) {
                                         const data = await response.json();
                                         url = data.urls[log.id] || log.pdf_url;
                                       }
                                     }
-                                    
+
                                     if (url) {
                                       // Create download link
                                       const link = document.createElement('a');
                                       link.href = url;
-                                      link.download = `TankLog_Report_${log.tank_id}_${new Date(log.occurred_at)
+                                      link.download = `TankLog_Report_${log.tank_id}_${new Date(
+                                        log.occurred_at
+                                      )
                                         .toISOString()
                                         .replace('T', '_')
                                         .replace(/\.\d{3}Z$/, '')
                                         .replace(/:/g, '-')}.pdf`;
                                       link.target = '_blank';
                                       link.rel = 'noopener noreferrer';
-                                      
+
                                       // Add to DOM, click, then remove
                                       document.body.appendChild(link);
                                       link.click();
@@ -403,7 +405,12 @@ export default function ReportsPage() {
                                       alert('No PDF URL available');
                                     }
                                   } catch (error) {
-                                    alert('Failed to download PDF: ' + (error instanceof Error ? error.message : 'Unknown error'));
+                                    alert(
+                                      'Failed to download PDF: ' +
+                                        (error instanceof Error
+                                          ? error.message
+                                          : 'Unknown error')
+                                    );
                                   }
                                 }}
                                 className="text-primary hover:text-primary-dark underline text-sm"
@@ -415,7 +422,6 @@ export default function ReportsPage() {
                                 No PDF
                               </span>
                             )}
-                          </div>
                         </td>
                       </tr>
                     );
