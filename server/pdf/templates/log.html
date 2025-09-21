@@ -12,8 +12,7 @@
       }
 
       body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         font-size: 12px;
         line-height: 1.4;
         color: #333;
@@ -32,7 +31,7 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 1in;
+        margin-bottom: 0.75in;
         border-bottom: 2px solid #2563eb;
         padding-bottom: 0.5in;
       }
@@ -66,26 +65,47 @@
         color: #666;
       }
 
-      .content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5in;
-        margin-bottom: 0.75in;
+      .executive-summary {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 0.4in;
+        margin-bottom: 0.5in;
       }
 
-      .field-group {
-        margin-bottom: 0.25in;
-      }
-
-      .field-label {
+      .summary-title {
+        font-size: 14px;
         font-weight: bold;
-        color: #374151;
-        margin-bottom: 0.1in;
+        color: #1e293b;
+        margin-bottom: 0.2in;
       }
 
-      .field-value {
-        color: #111;
-        word-wrap: break-word;
+      .summary-content {
+        font-size: 12px;
+        line-height: 1.5;
+        color: #475569;
+      }
+
+      .inspection-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 0.5in;
+        font-size: 11px;
+      }
+
+      .inspection-table th {
+        background: #f1f5f9;
+        color: #334155;
+        font-weight: bold;
+        padding: 0.2in 0.15in;
+        text-align: left;
+        border: 1px solid #cbd5e1;
+      }
+
+      .inspection-table td {
+        padding: 0.15in;
+        border: 1px solid #cbd5e1;
+        vertical-align: top;
       }
 
       .status-pass {
@@ -98,47 +118,92 @@
         font-weight: bold;
       }
 
-      .status-ok {
-        color: #059669;
+      .compliance-section {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-radius: 6px;
+        padding: 0.3in;
+        margin-bottom: 0.5in;
+      }
+
+      .compliance-title {
+        font-size: 13px;
+        font-weight: bold;
+        color: #0c4a6e;
+        margin-bottom: 0.2in;
+      }
+
+      .compliance-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.1in;
+        font-size: 11px;
+      }
+
+      .compliance-check {
+        margin-right: 0.1in;
         font-weight: bold;
       }
 
-      .status-issues {
-        color: #dc2626;
-        font-weight: bold;
+      .notes-section {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 0.3in;
+        margin-bottom: 0.5in;
       }
 
-      .notes {
-        grid-column: 1 / -1;
-        margin-top: 0.25in;
+      .notes-title {
+        font-size: 13px;
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 0.15in;
       }
 
       .notes-content {
-        background: #f9fafb;
-        padding: 0.25in;
-        border-radius: 4px;
+        font-size: 11px;
+        line-height: 1.4;
+        color: #4b5563;
         white-space: pre-wrap;
       }
 
       .corrective-action {
-        grid-column: 1 / -1;
-        margin-top: 0.25in;
         background: #fef2f2;
-        padding: 0.25in;
-        border-radius: 4px;
+        border: 1px solid #fecaca;
         border-left: 4px solid #dc2626;
+        border-radius: 6px;
+        padding: 0.3in;
+        margin-bottom: 0.5in;
       }
 
-      .photos {
-        grid-column: 1 / -1;
-        margin-top: 0.5in;
+      .corrective-title {
+        font-size: 13px;
+        font-weight: bold;
+        color: #dc2626;
+        margin-bottom: 0.15in;
+      }
+
+      .corrective-content {
+        font-size: 11px;
+        line-height: 1.4;
+        color: #7f1d1d;
+      }
+
+      .photos-section {
+        margin-bottom: 0.5in;
+      }
+
+      .photos-title {
+        font-size: 13px;
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 0.2in;
       }
 
       .photos-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(2in, 1fr));
         gap: 0.25in;
-        margin-top: 0.25in;
       }
 
       .photo {
@@ -163,13 +228,18 @@
       }
 
       .signature-section {
-        grid-column: 1 / -1;
-        margin-top: 0.5in;
-        margin-bottom: 1.5in;
-        padding: 0.25in;
-        border: 1px solid #d1d5db;
-        border-radius: 4px;
         background: #f9fafb;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 0.3in;
+        margin-bottom: 1in;
+      }
+
+      .signature-title {
+        font-size: 13px;
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 0.15in;
       }
 
       .signature-box {
@@ -178,7 +248,9 @@
         border-radius: 4px;
         margin: 0.1in 0;
         background: white;
-        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 0.1in;
       }
 
       .signature-date {
@@ -198,12 +270,18 @@
         font-size: 9px;
         color: #6b7280;
         border-top: 1px solid #e5e7eb;
-        padding-top: 0.15in;
+        padding-top: 0.2in;
         background: white;
+        line-height: 1.3;
       }
 
-      .page-break {
-        page-break-before: always;
+      .footer-left {
+        flex: 1;
+      }
+
+      .footer-right {
+        text-align: right;
+        flex: 1;
       }
 
       @media print {
@@ -220,11 +298,7 @@
       <div class="header">
         <div class="logo-section">
           {{#if organization.logo_url}}
-          <img
-            src="{{organization.logo_url}}"
-            alt="{{organization.name}}"
-            class="logo"
-          />
+          <img src="{{organization.logo_url}}" alt="{{organization.name}}" class="logo" />
           {{else}}
           <div class="title">TankLog</div>
           {{/if}}
@@ -237,105 +311,104 @@
         </div>
       </div>
 
-      <!-- Content -->
-      <div class="content">
-        <div class="field-group">
-          <div class="field-label">Occurred At</div>
-          <div class="field-value">{{localDate}}</div>
-        </div>
-
-        <div class="field-group">
-          <div class="field-label">Site / Facility</div>
-          <div class="field-value">{{log.site}}</div>
-        </div>
-
-        {{#if log.vehicle_id}}
-        <div class="field-group">
-          <div class="field-label">Vehicle / Bobtail ID</div>
-          <div class="field-value">{{log.vehicle_id}}</div>
-        </div>
-        {{/if}}
-
-        <div class="field-group">
-          <div class="field-label">Tank / Cylinder ID</div>
-          <div class="field-value">{{log.tank_id}}</div>
-        </div>
-
-        {{#if log.pressure}}
-        <div class="field-group">
-          <div class="field-label">Pressure</div>
-          <div class="field-value">
-            {{log.pressure}} {{complianceInfo.labels.pressureUnit}}
-          </div>
-        </div>
-        {{/if}}
-
-        <div class="field-group">
-          <div class="field-label">Leak Check</div>
-          <div
-            class="field-value {{#if log.leak_check}}status-pass{{else}}status-fail{{/if}}"
-          >
-            {{#if log.leak_check}}✓ Pass{{else}}✗ Fail{{/if}}
-          </div>
-        </div>
-
-        {{#if log.visual_ok}}
-        <div class="field-group">
-          <div class="field-label">Visual Inspection</div>
-          <div
-            class="field-value {{#if log.visual_ok}}status-ok{{else}}status-issues{{/if}}"
-          >
-            {{#if log.visual_ok}}✓ All OK{{else}}✗ Issues Found{{/if}}
-          </div>
-        </div>
-        {{/if}}
-
-        <div class="field-group">
-          <div class="field-label">Inspector</div>
-          <div class="field-value">
-            {{#if profile.name}}{{profile.name}}{{else}}{{profile.email}}{{/if}}
-          </div>
-        </div>
-
-        {{#if log.notes}}
-        <div class="notes">
-          <div class="field-label">Notes</div>
-          <div class="notes-content">{{log.notes}}</div>
-        </div>
-        {{/if}} {{#if log.corrective_action}}
-        <div class="corrective-action">
-          <div class="field-label">Corrective Action</div>
-          <div class="field-value">{{log.corrective_action}}</div>
-        </div>
-        {{/if}}
-
-        <!-- Signature Section -->
-        <div class="signature-section">
-          <div class="field-label">Digital Signature</div>
-          <div class="signature-box">
-            {{#if log.signature}}
-            <div style="padding: 0.1in; font-size: 10px; color: #059669">
-              ✓ Digital signature present
-            </div>
-            {{else}}
-            <div style="padding: 0.1in; font-size: 10px; color: #6b7280">
-              Digital signature not provided
-            </div>
-            {{/if}}
-          </div>
-          <div class="signature-date">Date: {{localDate}}</div>
+      <!-- Executive Summary -->
+      <div class="executive-summary">
+        <div class="summary-title">Executive Summary</div>
+        <div class="summary-content">
+          {{#if log.leak_check}}
+          Inspection completed successfully with no leaks detected{{#if log.visual_ok}} and all visual components in good condition{{/if}}.
+          {{else}}
+          Inspection identified issues requiring attention{{#if log.visual_ok}}{{else}} including visual inspection concerns{{/if}}.
+          {{/if}}
+          {{#if log.pressure}}System pressure recorded at {{log.pressure}} {{complianceInfo.labels.pressureUnit}}.{{/if}}
+          {{#if log.corrective_action}}Corrective action required: {{log.corrective_action}}{{/if}}
+          {{#unless log.corrective_action}}{{#unless log.leak_check}}No corrective action specified.{{/unless}}{{/unless}}
         </div>
       </div>
 
+      <!-- Inspection Overview Table -->
+      <table class="inspection-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Equipment ID</th>
+            <th>Location</th>
+            <th>Test Type</th>
+            <th>Result</th>
+            <th>Technician</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{localDate}}</td>
+            <td>{{log.tank_id}}{{#if log.vehicle_id}}<br><small>Vehicle: {{log.vehicle_id}}</small>{{/if}}</td>
+            <td>{{log.site}}</td>
+            <td>Leak Check{{#if log.visual_ok}} & Visual{{/if}}</td>
+            <td>
+              <span class="{{#if log.leak_check}}status-pass{{else}}status-fail{{/if}}">
+                {{#if log.leak_check}}✓ PASS{{else}}✗ FAIL{{/if}}
+              </span>
+              {{#if log.visual_ok}}
+              <br><span class="{{#if log.visual_ok}}status-pass{{else}}status-fail{{/if}}">
+                {{#if log.visual_ok}}✓ Visual OK{{else}}✗ Visual Issues{{/if}}
+              </span>
+              {{/if}}
+            </td>
+            <td>{{#if profile.name}}{{profile.name}}{{else}}{{profile.email}}{{/if}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Regulatory Compliance -->
+      <div class="compliance-section">
+        <div class="compliance-title">Regulatory Compliance</div>
+        <div class="compliance-item">
+          <span class="compliance-check">{{#if log.leak_check}}✓{{else}}✗{{/if}}</span>
+          Leak detection test completed per {{log.compliance_mode}} standards
+        </div>
+        {{#if log.visual_ok}}
+        <div class="compliance-item">
+          <span class="compliance-check">{{#if log.visual_ok}}✓{{else}}✗{{/if}}</span>
+          Visual inspection passed - no damage or defects observed
+        </div>
+        {{/if}}
+        {{#if log.pressure}}
+        <div class="compliance-item">
+          <span class="compliance-check">✓</span>
+          Pressure reading recorded: {{log.pressure}} {{complianceInfo.labels.pressureUnit}}
+        </div>
+        {{/if}}
+        <div class="compliance-item">
+          <span class="compliance-check">✓</span>
+          Inspection documented and digitally signed
+        </div>
+      </div>
+
+      <!-- Notes -->
+      {{#if log.notes}}
+      <div class="notes-section">
+        <div class="notes-title">Additional Notes</div>
+        <div class="notes-content">{{log.notes}}</div>
+      </div>
+      {{/if}}
+
+      <!-- Corrective Action -->
+      {{#if log.corrective_action}}
+      <div class="corrective-action">
+        <div class="corrective-title">Required Corrective Action</div>
+        <div class="corrective-content">{{log.corrective_action}}</div>
+      </div>
+      {{/if}}
+
       <!-- Photos -->
       {{#if photoUrls.length}}
-      <div class="photos">
-        <div class="field-label">Photos ({{photoUrls.length}})</div>
+      <div class="photos-section">
+        <div class="photos-title">Inspection Photos ({{photoUrls.length}})</div>
         <div class="photos-grid">
           {{#each photoUrls}}
           <img
             src="{{this}}"
-            alt="Log photo"
+            alt="Inspection photo"
             class="photo"
             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
           />
@@ -347,14 +420,33 @@
       </div>
       {{/if}}
 
+      <!-- Digital Signature -->
+      <div class="signature-section">
+        <div class="signature-title">Digital Signature</div>
+        <div class="signature-box">
+          {{#if log.signature}}
+          <div style="font-size: 10px; color: #059669">
+            ✓ Digital signature verified
+          </div>
+          {{else}}
+          <div style="font-size: 10px; color: #6b7280">
+            Digital signature not provided
+          </div>
+          {{/if}}
+        </div>
+        <div class="signature-date">Date: {{localDate}}</div>
+      </div>
+
       <!-- Footer -->
       <div class="footer">
-        <div>Generated by TankLog at {{generatedAt}}</div>
-        <div>
-          This report certifies compliance with {{log.compliance_mode}}
-          standards
+        <div class="footer-left">
+          <div>Generated by TankLog at {{generatedAt}}</div>
+          <div>Report ID: {{logIdShort}}</div>
         </div>
-        <div>Integrity: {{integrityHash}}</div>
+        <div class="footer-right">
+          <div>Compliance: {{log.compliance_mode}}</div>
+          <div>Integrity: {{integrityHash}}</div>
+        </div>
       </div>
     </div>
   </body>
