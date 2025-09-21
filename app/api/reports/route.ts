@@ -65,7 +65,7 @@ export async function GET() {
     // Get user profiles separately to avoid RLS recursion
     let logsWithUsers = [];
     if (logs && logs.length > 0) {
-      const userIds = [...new Set(logs.map((log) => log.user_id))];
+      const userIds = Array.from(new Set(logs.map((log) => log.user_id)));
       console.log('🔍 Reports API: Fetching profiles for user_ids:', userIds);
       const { data: profiles, error: profilesError } = await serviceClient
         .from('profiles')

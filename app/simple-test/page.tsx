@@ -2,8 +2,15 @@
 
 import { useState, useEffect } from 'react';
 
+interface ReportData {
+  totalLogs: number;
+  logsThisMonth: number;
+  complianceRate: number;
+  logs: any[];
+}
+
 export default function SimpleTestPage() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

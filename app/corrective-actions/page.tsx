@@ -15,6 +15,7 @@ export default function CorrectiveActionsPage() {
   const [selectedAction, setSelectedAction] =
     useState<CorrectiveActionWithDetails | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [filter] = useState<'all' | 'overdue' | 'due_soon' | 'on_track'>('all');
   const {
     actions,
     pendingChanges,

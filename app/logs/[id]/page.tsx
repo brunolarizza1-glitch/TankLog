@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import { Card } from '@/components/design-system';
-import { getComplianceModeInfo } from '@/lib/compliance';
+import { getComplianceModeInfo, ComplianceMode } from '@/lib/compliance';
 
 interface Log {
   id: string;
@@ -115,7 +115,7 @@ export default function LogDetailPage() {
     );
   }
 
-  const complianceInfo = getComplianceModeInfo(log.compliance_mode);
+  const complianceInfo = getComplianceModeInfo(log.compliance_mode as ComplianceMode);
   const hasFailures = !log.leak_check || log.visual_ok === false;
 
   return (
