@@ -156,7 +156,7 @@ export default function MobileCorrectiveActionsPage() {
         <div className="fixed bottom-20 right-4 z-20">
           <button
             onClick={() => router.push('/logs/new')}
-            className="w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:bg-primary-dark transition-colors flex items-center justify-center"
+            className="w-14 h-14 bg-primary text-white rounded-xl shadow-lg hover:bg-primary-dark transition-colors flex items-center justify-center"
           >
             <svg
               className="w-6 h-6"

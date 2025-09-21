@@ -9,8 +9,26 @@ export default function HomePage() {
   const { user, profile, loading } = useAuth();
   const router = useRouter();
 
+  console.log(
+    '🏠 HomePage: loading:',
+    loading,
+    'user:',
+    user?.id || 'none',
+    'profile:',
+    profile?.id || 'none'
+  );
+
   useEffect(() => {
+    console.log(
+      '🏠 HomePage: useEffect triggered - loading:',
+      loading,
+      'user:',
+      !!user,
+      'profile:',
+      !!profile
+    );
     if (!loading && user && profile?.org_id) {
+      console.log('🏠 HomePage: Redirecting to dashboard');
       router.push('/dashboard');
     }
   }, [user, loading, profile, router]);

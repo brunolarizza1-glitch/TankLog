@@ -2,10 +2,12 @@ import puppeteer from 'puppeteer';
 import { createAdminClient } from '@/lib/supabase/server';
 import { db } from '@/server/db';
 import { sendLogPdfEmail } from '@/lib/postmark';
+import { generateLogPdfProfessional } from './generateLogPdfProfessional';
 
 interface PdfResult {
-  pdfUrl: string;
-  storagePath: string;
+  pdfBuffer: Uint8Array;
+  pdfUrl?: string;
+  storagePath?: string;
   filename: string;
 }
 
@@ -148,7 +150,7 @@ function generateHtml(logData: any, organization: any, profile: any): string {
 <body>
   <div class="header">
     <div class="logo-section">
-      <img src="file://${process.cwd()}/public/brand/logo-horizontal.jpeg" class="logo" alt="TankLog">
+        <img src="file://${process.cwd()}/public/brand/icon-transparent.jpeg" class="logo" alt="TankLog">
     </div>
     <div class="header-info">
       <div class="org-name">${organization.name}</div>
@@ -204,7 +206,7 @@ function generateHtml(logData: any, organization: any, profile: any): string {
         </div>
         <div class="field">
           <div class="field-label">Initials:</div>
-          <div class="field-value">${logData.initials || 'N/A'}</div>
+          <div class="field-value">Digital Signature</div>
         </div>
         <div class="field">
           <div class="field-label">Date:</div>
@@ -255,115 +257,22 @@ async function generateSignedUrl(storagePath: string): Promise<string> {
 export async function generateLogPdfPuppeteer(
   logId: string
 ): Promise<PdfResult> {
+  console.log('=== PDF GENERATION DEBUG START ===');
   console.log('generateLogPdfPuppeteer called for logId:', logId);
   try {
-    const pdfData = await loadLogPdfData(logId);
-    const filename = generateFilename(pdfData);
-    const html = generateHtml(
-      pdfData.log,
-      pdfData.organization,
-      pdfData.profile
-    );
-
-    // Launch Puppeteer
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-
-    // Generate PDF
-    const pdfBuffer = await page.pdf({
-      format: 'Letter',
-      printBackground: true,
-      margin: {
-        top: '0.5in',
-        right: '0.5in',
-        bottom: '0.5in',
-        left: '0.5in',
-      },
-    });
-
-    await browser.close();
-
-    // Upload to Supabase Storage
-    const supabase = createAdminClient();
-    const date = new Date(pdfData.log.occurred_at);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const storagePath = `${pdfData.log.org_id}/${year}/${month}/${filename}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('log-pdfs')
-      .upload(storagePath, pdfBuffer, {
-        contentType: 'application/pdf',
-        upsert: true,
-      });
-
-    if (uploadError) {
-      throw new Error(`Failed to upload PDF: ${uploadError.message}`);
-    }
-
-    const pdfUrl = await generateSignedUrl(storagePath);
-
-    // Always send email to the user who created the log
-    console.log('Sending email to log creator:', {
-      userEmail: pdfData.profile.email,
-      hasCustomerEmail: !!pdfData.log.customer_email,
-      customerEmail: pdfData.log.customer_email,
-      logId: pdfData.log.id,
-    });
-
-    // Send email to the user who created the log
-    if (pdfData.profile.email) {
-      try {
-        // Validate PDF buffer
-        if (!pdfBuffer || pdfBuffer.length === 0) {
-          throw new Error('PDF buffer is empty or invalid');
-        }
-
-        // Check what's actually in the buffer
-        const bufferStart = Buffer.from(pdfBuffer)
-          .toString('utf8')
-          .substring(0, 20);
-        console.log('PDF buffer start:', bufferStart);
-
-        // Check if PDF starts with PDF header (but don't fail if it doesn't)
-        const pdfHeader = Buffer.from(pdfBuffer)
-          .toString('utf8')
-          .substring(0, 4);
-        if (pdfHeader !== '%PDF') {
-          console.log(
-            'Warning: PDF does not start with %PDF header, but continuing anyway'
-          );
-          console.log('Actual header:', pdfHeader);
-        }
-
-        await sendLogPdfEmail(
-          pdfData.profile.email,
-          pdfData.log,
-          Buffer.from(pdfBuffer),
-          filename
-        );
-
-        console.log('Email sent successfully');
-      } catch (emailError) {
-        console.error('Failed to send email:', emailError);
-        // Don't throw - PDF generation succeeded even if email failed
-      }
-    } else {
-      console.log('No user email found, skipping email send');
-    }
-
-    return {
-      pdfUrl,
-      storagePath,
-      filename,
-    };
+    // Use the new professional PDF generator
+    console.log('Calling generateLogPdfProfessional...');
+    const result = await generateLogPdfProfessional(logId);
+    console.log('PDF generation completed successfully');
+    console.log('PDF buffer size:', result.pdfBuffer.length);
+    console.log('PDF filename:', result.filename);
+    console.log('=== PDF GENERATION DEBUG END ===');
+    return result;
   } catch (error) {
+    console.error('=== PDF GENERATION ERROR ===');
     console.error('Error generating PDF:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    console.error('=== PDF GENERATION ERROR END ===');
     throw new Error(
       `Failed to generate PDF for log ${logId}: ${error instanceof Error ? error.message : 'Unknown error'}`
     );

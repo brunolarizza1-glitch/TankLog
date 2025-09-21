@@ -12,6 +12,7 @@ export default function LogsPage() {
   const router = useRouter();
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedLogs, setExpandedLogs] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!user) {
@@ -35,9 +36,19 @@ export default function LogsPage() {
     }
   };
 
+  const toggleExpanded = (logId: string) => {
+    const newExpanded = new Set(expandedLogs);
+    if (newExpanded.has(logId)) {
+      newExpanded.delete(logId);
+    } else {
+      newExpanded.add(logId);
+    }
+    setExpandedLogs(newExpanded);
+  };
+
   if (!user) {
     return (
-      <AppShell title="Inspections" breadcrumbs={[{ label: 'Inspections' }]}>
+      <AppShell title="Logs" breadcrumbs={[{ label: 'Logs' }]}>
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -47,7 +58,7 @@ export default function LogsPage() {
 
   if (loading) {
     return (
-      <AppShell title="Inspections" breadcrumbs={[{ label: 'Inspections' }]}>
+      <AppShell title="Logs" breadcrumbs={[{ label: 'Logs' }]}>
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -56,7 +67,7 @@ export default function LogsPage() {
   }
 
   return (
-    <AppShell title="Inspections" breadcrumbs={[{ label: 'Inspections' }]}>
+    <AppShell title="Logs" breadcrumbs={[{ label: 'Logs' }]}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -89,73 +100,173 @@ export default function LogsPage() {
           <div className="space-y-4">
             {logs.map((log) => {
               const complianceInfo = getComplianceModeInfo(log.compliance_mode);
+              const isExpanded = expandedLogs.has(log.id);
               return (
                 <div
                   key={log.id}
-                  className="bg-white border border-gray-200 rounded-lg p-4"
+                  className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => toggleExpanded(log.id)}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <h3 className="font-semibold text-brand-dark">
-                          {log.site || log.vehicle_id || 'Unnamed Site'}
-                        </h3>
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                          {complianceInfo.mode}
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-600 space-y-1">
-                        <p>
-                          <strong>Tank ID:</strong> {log.tank_id}
-                        </p>
-                        <p>
-                          <strong>Date:</strong>{' '}
-                          {new Date(log.occurred_at).toLocaleDateString()}
-                        </p>
-                        <p>
-                          <strong>Leak Check:</strong>
-                          <span
-                            className={`ml-1 ${log.leak_check ? 'text-green-600' : 'text-red-600'}`}
-                          >
-                            {log.leak_check ? 'Pass' : 'Fail'}
+                  {/* Summary View */}
+                  <div className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <h3 className="font-semibold text-brand-dark">
+                            {log.site || log.vehicle_id || 'Unnamed Site'}
+                          </h3>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                            {complianceInfo.mode}
                           </span>
-                        </p>
-                        {log.visual_ok !== null && (
+                        </div>
+                        <div className="text-sm text-gray-600 space-y-1">
                           <p>
-                            <strong>Visual Inspection:</strong>
+                            <strong>Tank ID:</strong> {log.tank_id}
+                          </p>
+                          <p>
+                            <strong>Date:</strong>{' '}
+                            {new Date(log.occurred_at).toLocaleDateString()}
+                          </p>
+                          <p>
+                            <strong>Leak Check:</strong>
                             <span
-                              className={`ml-1 ${log.visual_ok ? 'text-green-600' : 'text-red-600'}`}
+                              className={`ml-1 ${log.leak_check ? 'text-green-600' : 'text-red-600'}`}
                             >
-                              {log.visual_ok ? 'All OK' : 'Issues Found'}
+                              {log.leak_check ? 'Pass' : 'Fail'}
                             </span>
                           </p>
-                        )}
-                        {log.pressure && (
-                          <p>
-                            <strong>Pressure:</strong> {log.pressure}{' '}
-                            {complianceInfo.labels.pressureUnit}
-                          </p>
-                        )}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="text-right text-sm text-gray-500">
+                          <p>Version {log.version}</p>
+                          <p>{new Date(log.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <svg
+                          className={`w-5 h-5 text-gray-400 transition-transform ${
+                            isExpanded ? 'rotate-180' : ''
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
                       </div>
                     </div>
-                    <div className="text-right text-sm text-gray-500">
-                      <p>Version {log.version}</p>
-                      <p>{new Date(log.created_at).toLocaleDateString()}</p>
-                    </div>
                   </div>
-                  {log.notes && (
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <p className="text-sm text-gray-600">
-                        <strong>Notes:</strong> {log.notes}
-                      </p>
-                    </div>
-                  )}
-                  {log.corrective_action && (
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <p className="text-sm text-red-600">
-                        <strong>Corrective Action:</strong>{' '}
-                        {log.corrective_action}
-                      </p>
+
+                  {/* Expanded Details */}
+                  {isExpanded && (
+                    <div className="border-t border-gray-100 bg-gray-50 p-4 space-y-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <h4 className="font-medium text-gray-900">
+                            Inspection Details
+                          </h4>
+                          {log.visual_ok !== null && (
+                            <p className="text-sm">
+                              <strong>Visual Inspection:</strong>
+                              <span
+                                className={`ml-1 ${log.visual_ok ? 'text-green-600' : 'text-red-600'}`}
+                              >
+                                {log.visual_ok ? 'All OK' : 'Issues Found'}
+                              </span>
+                            </p>
+                          )}
+                          {log.pressure && (
+                            <p className="text-sm">
+                              <strong>Pressure:</strong> {log.pressure}{' '}
+                              {complianceInfo.labels.pressureUnit}
+                            </p>
+                          )}
+                          <p className="text-sm">
+                            <strong>Compliance Mode:</strong>{' '}
+                            {complianceInfo.mode}
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <h4 className="font-medium text-gray-900">
+                            Additional Info
+                          </h4>
+                          <p className="text-sm">
+                            <strong>Created:</strong>{' '}
+                            {new Date(log.created_at).toLocaleString()}
+                          </p>
+                          <p className="text-sm">
+                            <strong>Occurred:</strong>{' '}
+                            {new Date(log.occurred_at).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      {log.notes && (
+                        <div className="pt-3 border-t border-gray-200">
+                          <h4 className="font-medium text-gray-900 mb-2">
+                            Notes
+                          </h4>
+                          <p className="text-sm text-gray-600 bg-white p-3 rounded border">
+                            {log.notes}
+                          </p>
+                        </div>
+                      )}
+
+                      {log.corrective_action && (
+                        <div className="pt-3 border-t border-gray-200">
+                          <h4 className="font-medium text-red-600 mb-2">
+                            Corrective Action Required
+                          </h4>
+                          <p className="text-sm text-red-600 bg-red-50 p-3 rounded border border-red-200">
+                            {log.corrective_action}
+                          </p>
+                        </div>
+                      )}
+
+                      {log.photo_urls && log.photo_urls.length > 0 && (
+                        <div className="pt-3 border-t border-gray-200">
+                          <h4 className="font-medium text-gray-900 mb-2">
+                            Photos ({log.photo_urls.length})
+                          </h4>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            {log.photo_urls.map((url, index) => (
+                              <img
+                                key={index}
+                                src={url}
+                                alt={`Inspection photo ${index + 1}`}
+                                className="w-full h-20 object-cover rounded border"
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="pt-3 border-t border-gray-200 flex justify-end space-x-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Add edit functionality here
+                          }}
+                          className="text-sm text-primary hover:text-primary-dark underline"
+                        >
+                          Edit Log
+                        </button>
+                        {log.pdf_url && (
+                          <a
+                            href={log.pdf_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-sm text-primary hover:text-primary-dark underline"
+                          >
+                            View PDF
+                          </a>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

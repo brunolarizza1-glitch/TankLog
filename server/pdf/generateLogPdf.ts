@@ -441,7 +441,7 @@ function generateLogHtml(data: LogPdfData): string {
                 <div class="field-value">
                     ${profile.name || profile.email}<br>
                     ${profile.email}<br>
-                    Initials: ${log.initials || 'N/A'}
+                    Digital Signature: ${log.signature ? 'Present' : 'Not provided'}
                 </div>
             </div>
             

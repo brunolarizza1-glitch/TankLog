@@ -92,16 +92,6 @@ export function validateLogData(
     errors.push('Leak Check result is required');
   }
 
-  if (
-    !data.initials ||
-    typeof data.initials !== 'string' ||
-    !data.initials.trim() ||
-    data.initials.length < 2 ||
-    data.initials.length > 3
-  ) {
-    errors.push('Initials must be 2-3 characters');
-  }
-
   // Mode-specific validation
   if (complianceMode === 'US_NFPA58') {
     // Either site OR vehicle ID required

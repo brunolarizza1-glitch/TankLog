@@ -60,15 +60,142 @@ export default function NewLogPage() {
     vehicle_id: '',
     tank_id: '',
     pressure: '',
-    leak_check: null as boolean | null,
+    leak_check: true,
     visual_ok: null as boolean | null,
     notes: '',
     corrective_action: '',
-    customer_email: '',
-    initials: '',
+    signature: '',
   });
 
   const [photos, setPhotos] = useState<CompressedPhoto[]>([]);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [lastPoint, setLastPoint] = useState<{ x: number; y: number } | null>(
+    null
+  );
+  const [signatureCanvas, setSignatureCanvas] =
+    useState<HTMLCanvasElement | null>(null);
+
+  // Signature drawing functions
+  const startDrawing = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+  ) => {
+    setIsDrawing(true);
+    const canvas = e.currentTarget;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const x =
+      (e.type.includes('touch')
+        ? (e as React.TouchEvent).touches[0].clientX - rect.left
+        : (e as React.MouseEvent).clientX - rect.left) * scaleX;
+    const y =
+      (e.type.includes('touch')
+        ? (e as React.TouchEvent).touches[0].clientY - rect.top
+        : (e as React.MouseEvent).clientY - rect.top) * scaleY;
+
+    // If we have a last point, continue from there, otherwise start new path
+    if (lastPoint) {
+      ctx.beginPath();
+      ctx.moveTo(lastPoint.x, lastPoint.y);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+    setLastPoint({ x, y });
+  };
+
+  const draw = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+  ) => {
+    if (!isDrawing) return;
+
+    const canvas = e.currentTarget;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const x =
+      (e.type.includes('touch')
+        ? (e as React.TouchEvent).touches[0].clientX - rect.left
+        : (e as React.MouseEvent).clientX - rect.left) * scaleX;
+    const y =
+      (e.type.includes('touch')
+        ? (e as React.TouchEvent).touches[0].clientY - rect.top
+        : (e as React.MouseEvent).clientY - rect.top) * scaleY;
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+
+    // Update last point for continuation
+    setLastPoint({ x, y });
+
+    // Update signature data
+    const signatureData = canvas.toDataURL('image/png', 0.8);
+    handleInputChange('signature', signatureData);
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+    // Don't clear lastPoint here - we want to continue from where we left off
+  };
+
+  const clearSignature = () => {
+    const canvas = document.getElementById('signature') as HTMLCanvasElement;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        handleInputChange('signature', '');
+        setLastPoint(null); // Reset last point when clearing
+      }
+    }
+  };
+
+  // Initialize signature canvas with proper sizing
+  useEffect(() => {
+    const initCanvas = () => {
+      const canvas = document.getElementById('signature') as HTMLCanvasElement;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          // Set exact canvas dimensions to match CSS size
+          canvas.width = 400;
+          canvas.height = 100;
+
+          // Better signature styling
+          ctx.strokeStyle = '#0066cc'; // TankLog blue
+          ctx.lineWidth = 2;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.fillStyle = 'transparent';
+
+          setSignatureCanvas(canvas);
+        }
+      }
+    };
+
+    // Initialize immediately and also after a short delay to ensure DOM is ready
+    initCanvas();
+    const timeoutId = setTimeout(initCanvas, 100);
+
+    // Also reinitialize on window resize
+    window.addEventListener('resize', initCanvas);
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', initCanvas);
+    };
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -146,7 +273,11 @@ export default function NewLogPage() {
 
     const draft = loadDraft(user.id);
     if (draft) {
-      setFormData(draft.fields);
+      setFormData({
+        ...draft.fields,
+        signature: (draft.fields as any).signature || '',
+        leak_check: draft.fields.leak_check ?? true,
+      });
       setPhotos(
         draft.photos.map((photo) => ({
           id: photo.id,
@@ -198,16 +329,12 @@ export default function NewLogPage() {
       return;
     }
 
-    // Validate initials
-    if (
-      !formData.initials ||
-      formData.initials.length < 2 ||
-      formData.initials.length > 3
-    ) {
-      setErrors(['Initials must be 2-3 characters']);
-      setIsSubmitting(false);
-      return;
-    }
+    // Validate signature (optional for now)
+    // if (!formData.signature || formData.signature.trim() === '') {
+    //   setErrors(['Digital signature is required']);
+    //   setIsSubmitting(false);
+    //   return;
+    // }
 
     // Check if there are failures that need corrective actions
     const hasFailures =
@@ -228,8 +355,9 @@ export default function NewLogPage() {
         // Offline submission
         await submitOffline();
       }
-    } catch (error) {
-      setMessage('Failed to submit log. Please try again.');
+    } catch (error: any) {
+      console.error('Log submission error:', error);
+      setMessage(`Failed to submit log: ${error.message || 'Unknown error'}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -257,22 +385,37 @@ export default function NewLogPage() {
       photoUrls.push(url);
     }
 
-    // Submit the log
+    // Submit the log - filter out empty strings for optional fields
+    const logData = {
+      ...formData,
+      photo_urls: photoUrls,
+      compliance_mode: complianceMode,
+      // Filter out empty strings for optional fields
+      site: formData.site || undefined,
+      vehicle_id: formData.vehicle_id || undefined,
+      pressure: formData.pressure || undefined,
+      notes: formData.notes || undefined,
+      corrective_action: formData.corrective_action || undefined,
+    };
+
+    console.log('Submitting log data:', logData);
+
     const response = await fetch('/api/logs', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        ...formData,
-        photo_urls: photoUrls,
-        compliance_mode: complianceMode,
-      }),
+      body: JSON.stringify(logData),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to create log');
+      console.error('API error response:', errorData);
+      console.error('Validation details:', errorData.details);
+      throw new Error(
+        errorData.error ||
+          `Failed to create log (${response.status}): ${errorData.details?.join(', ') || 'Unknown validation error'}`
+      );
     }
 
     const result = await response.json();
@@ -328,11 +471,8 @@ export default function NewLogPage() {
   if (!user) {
     return (
       <AppShell
-        title="New Inspection"
-        breadcrumbs={[
-          { label: 'Inspections', href: '/logs' },
-          { label: 'New Inspection' },
-        ]}
+        title="New Log"
+        breadcrumbs={[{ label: 'Logs', href: '/logs' }, { label: 'New Log' }]}
       >
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -344,11 +484,8 @@ export default function NewLogPage() {
   if (complianceLoading) {
     return (
       <AppShell
-        title="New Inspection"
-        breadcrumbs={[
-          { label: 'Inspections', href: '/logs' },
-          { label: 'New Inspection' },
-        ]}
+        title="New Log"
+        breadcrumbs={[{ label: 'Logs', href: '/logs' }, { label: 'New Log' }]}
       >
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -359,10 +496,10 @@ export default function NewLogPage() {
 
   return (
     <AppShell
-      title="New Inspection"
+      title="New Log"
       breadcrumbs={[
         { label: 'Inspections', href: '/logs' },
-        { label: 'New Inspection' },
+        { label: 'New Log' },
       ]}
     >
       <div className="min-h-screen pb-20">
@@ -473,7 +610,7 @@ export default function NewLogPage() {
         <form
           id="log-form"
           onSubmit={handleSubmit}
-          className="px-4 py-6 space-y-6"
+          className="px-4 py-6 pb-32 space-y-6"
         >
           {/* Site */}
           <div>
@@ -685,52 +822,82 @@ export default function NewLogPage() {
             </div>
           )}
 
-          {/* Customer Email */}
+          {/* Digital Signature */}
           <div>
             <label
-              htmlFor="customer_email"
+              htmlFor="signature"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Customer Email
+              Digital Signature *
             </label>
-            <input
-              id="customer_email"
-              type="email"
-              value={formData.customer_email}
-              onChange={(e) =>
-                handleInputChange('customer_email', e.target.value)
-              }
-              placeholder="Enter customer email (optional)"
-              className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-base"
-            />
-          </div>
-
-          {/* Initials */}
-          <div>
-            <label
-              htmlFor="initials"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Initials *
-            </label>
-            <input
-              id="initials"
-              type="text"
-              value={formData.initials}
-              onChange={(e) =>
-                handleInputChange('initials', e.target.value.toUpperCase())
-              }
-              placeholder="Enter your initials (2-3 characters)"
-              maxLength={3}
-              required
-              className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-base uppercase"
-            />
-            <p className="text-xs text-gray-500 mt-1">2-3 uppercase letters</p>
+            <div className="border-2 border-gray-300 rounded-lg p-4 bg-white min-h-[120px] relative flex justify-center">
+              <canvas
+                id="signature"
+                className="border border-gray-200 rounded cursor-crosshair touch-none"
+                style={{
+                  width: '400px',
+                  height: '100px',
+                  background:
+                    'linear-gradient(45deg, #f8f9fa 25%, transparent 25%), linear-gradient(-45deg, #f8f9fa 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f8f9fa 75%), linear-gradient(-45deg, transparent 75%, #f8f9fa 75%)',
+                  backgroundSize: '15px 15px',
+                  backgroundPosition: '0 0, 0 7.5px, 7.5px -7.5px, -7.5px 0px',
+                }}
+                onMouseDown={(e) => startDrawing(e)}
+                onMouseMove={(e) => draw(e)}
+                onMouseUp={() => stopDrawing()}
+                onMouseLeave={() => stopDrawing()}
+                onMouseEnter={(e) => {
+                  // If we have a last point and we're not currently drawing,
+                  // start drawing from the last point when mouse enters
+                  if (lastPoint && !isDrawing) {
+                    startDrawing(e);
+                  }
+                }}
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  startDrawing(e);
+                }}
+                onTouchMove={(e) => {
+                  e.preventDefault();
+                  draw(e);
+                }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  stopDrawing();
+                }}
+              />
+              {!formData.signature && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span className="text-gray-400 text-sm">Sign here</span>
+                </div>
+              )}
+              {formData.signature && (
+                <button
+                  type="button"
+                  onClick={clearSignature}
+                  className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600 transition-colors"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="flex justify-between items-center mt-2">
+              <p className="text-xs text-gray-500">
+                Sign above with mouse or touch
+              </p>
+              <button
+                type="button"
+                onClick={clearSignature}
+                className="text-xs text-gray-500 hover:text-gray-700 underline"
+              >
+                Clear
+              </button>
+            </div>
           </div>
         </form>
 
         {/* Sticky Bottom Actions */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 space-y-3">
+        <div className="fixed bottom-20 left-0 right-0 bg-white border-t border-gray-200 p-4 space-y-3 z-40">
           {/* Draft Actions */}
           <div className="flex space-x-2">
             <button

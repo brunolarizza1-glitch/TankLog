@@ -19,3 +19,9 @@ console.log('Copy and paste this SQL into your Supabase SQL Editor:');
 console.log(sql);
 
 
+
+
+
+
+
+

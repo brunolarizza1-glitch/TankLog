@@ -23,7 +23,7 @@ export async function handleLeakCheckFailure(
       description: 'Leak detected at valve connection #3',
       requiredAction: 'Replace valve connection gasket and re-test for leaks',
       assignedTo: technicianId,
-      // customSeverity: 'immediate' // Optional - will be auto-determined if not provided
+      customSeverity: 'immediate' as const,
     };
 
     const action = await correctiveActionService.createCorrectiveAction({
@@ -174,18 +174,21 @@ export async function handleMultipleFailures(inspectionId: string) {
         description: 'Small leak detected at connection point',
         requiredAction: 'Tighten connection and re-test',
         assignedTo: 'tech-123',
+        customSeverity: 'immediate' as const,
       },
       {
         itemId: 'visual_inspection',
         description: 'Rust visible on tank exterior',
         requiredAction: 'Clean rust and apply protective coating',
         assignedTo: 'tech-456',
+        customSeverity: '7day' as const,
       },
       {
         itemId: 'documentation',
         description: 'Missing maintenance log entries for last 3 days',
         requiredAction: 'Complete missing log entries and update records',
         assignedTo: 'admin-789',
+        customSeverity: '24hr' as const,
       },
     ];
 

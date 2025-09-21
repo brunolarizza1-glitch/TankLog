@@ -15,8 +15,6 @@ export interface DraftLog {
     visual_ok: boolean | null;
     notes: string;
     corrective_action: string;
-    customer_email: string;
-    initials: string;
   };
   photos: Array<{
     id: string;

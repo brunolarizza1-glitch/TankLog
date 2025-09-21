@@ -30,8 +30,8 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
     const pathSegments = pathname.split('/').filter(Boolean);
     const breadcrumbMap: Record<string, string> = {
       dashboard: 'Dashboard',
-      logs: 'Inspections',
-      'logs/new': 'New Inspection',
+      logs: 'Logs',
+      'logs/new': 'New Log',
       'corrective-actions': 'Corrective Actions',
       settings: 'Settings',
       'settings/compliance': 'Compliance Settings',
@@ -56,15 +56,12 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
       <div className="h-full px-6 flex items-center justify-between">
         {/* Left: Logo */}
         <div className="flex items-center">
-          <Link href="/dashboard" className="flex items-center space-x-3">
-            <Image
-              src="/logo.svg"
+          <Link href="/dashboard" className="flex items-center">
+            <img
+              src="/brand/icon-transparent.jpeg"
               alt="TankLog"
-              width={32}
-              height={32}
-              className="h-8 w-auto"
+              className="h-14 w-auto brand-img"
             />
-            <span className="text-xl font-bold text-gray-700">TankLog</span>
           </Link>
         </div>
 
@@ -124,8 +121,8 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
               />
             </svg>
-            {/* Notification badge */}
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-danger rounded-full"></span>
+            {/* Notification badge - only show if there are notifications */}
+            {/* <span className="absolute -top-1 -right-1 h-3 w-3 bg-danger rounded-full"></span> */}
           </button>
 
           {/* User Avatar & Dropdown */}

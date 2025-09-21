@@ -36,11 +36,10 @@ export interface Log {
   visual_ok?: boolean;
   notes?: string;
   corrective_action?: string;
-  customer_email?: string;
   photo_urls: string[];
   pdf_url?: string;
   email_message_id?: string;
-  initials?: string;
+  signature?: string;
   has_failures?: boolean;
   created_at: string;
 }
@@ -227,6 +226,28 @@ export class Database {
 
     if (error) {
       console.error('Error creating log:', error);
+
+      // If signature column doesn't exist, try without it
+      if (error.code === 'PGRST204' && error.message.includes('signature')) {
+        console.log(
+          'Signature column not found, creating log without signature'
+        );
+        const { signature, ...logWithoutSignature } = log;
+
+        const { data: retryData, error: retryError } = await this.supabase
+          .from('logs')
+          .insert(logWithoutSignature)
+          .select()
+          .single();
+
+        if (retryError) {
+          console.error('Error creating log without signature:', retryError);
+          return null;
+        }
+
+        return retryData;
+      }
+
       return null;
     }
 
@@ -320,6 +341,10 @@ export class Database {
   }
 
   async updateLog(logId: string, updates: Partial<Log>): Promise<Log | null> {
+    console.log('=== UPDATE LOG DEBUG ===');
+    console.log('Log ID:', logId);
+    console.log('Updates:', JSON.stringify(updates, null, 2));
+
     const { data, error } = await this.supabase
       .from('logs')
       .update(updates)
@@ -329,9 +354,12 @@ export class Database {
 
     if (error) {
       console.error('Error updating log:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       return null;
     }
 
+    console.log('Update successful, data:', data);
+    console.log('=== UPDATE LOG DEBUG END ===');
     return data;
   }
 

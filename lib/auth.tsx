@@ -19,6 +19,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
+    // Return default values during server-side rendering
+    if (typeof window === 'undefined') {
+      return {
+        user: null,
+        profile: null,
+        loading: true,
+        signInWithGoogle: async () => {},
+        signInWithMagicLink: async () => {},
+        signOut: async () => {},
+      };
+    }
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
@@ -31,32 +42,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
 
   useEffect(() => {
+    console.log('🔍 Auth: Starting auth check...');
+
+    // Only run on client side
+    if (typeof window === 'undefined') {
+      console.log('🔍 Auth: Server side, skipping auth check');
+      return;
+    }
+
     const checkAuth = async () => {
       try {
         const {
           data: { session },
         } = await supabase.auth.getSession();
+        console.log('🔍 Auth: Session data:', session?.user?.id || 'No user');
         setUser(session?.user ?? null);
 
         if (session?.user) {
+          console.log('🔍 Auth: User found, fetching profile...');
           try {
             const response = await fetch(
               `/api/profile?userId=${session.user.id}`
             );
+            console.log('🔍 Auth: Profile response status:', response.status);
             if (response.ok) {
               const profileData = await response.json();
+              console.log('🔍 Auth: Profile data:', profileData);
               setProfile(profileData);
+            } else {
+              console.log('🔍 Auth: Profile fetch failed');
+              setProfile(null);
             }
           } catch (error) {
+            console.log('🔍 Auth: Profile fetch error:', error);
             setProfile(null);
           }
         } else {
+          console.log('🔍 Auth: No user, setting profile to null');
           setProfile(null);
         }
       } catch (error) {
+        console.log('🔍 Auth: Auth check error:', error);
         setUser(null);
         setProfile(null);
       } finally {
+        console.log('🔍 Auth: Setting loading to false');
         setLoading(false);
       }
     };

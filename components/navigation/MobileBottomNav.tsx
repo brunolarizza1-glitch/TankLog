@@ -10,7 +10,7 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
-export const MobileBottomNav: React.FC = () => {
+export const BottomNav: React.FC = () => {
   const pathname = usePathname();
 
   const navItems: NavItem[] = [
@@ -28,20 +28,14 @@ export const MobileBottomNav: React.FC = () => {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"
+            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
           />
         </svg>
       ),
     },
     {
       href: '/logs',
-      label: 'Inspections',
+      label: 'Logs',
       icon: (
         <svg
           className="w-6 h-6"
@@ -53,7 +47,7 @@ export const MobileBottomNav: React.FC = () => {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
       ),
@@ -125,18 +119,18 @@ export const MobileBottomNav: React.FC = () => {
   };
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 h-18 bg-white border-t border-gray-200 safe-area-inset-bottom">
-      <div className="h-full px-4 flex items-center justify-around">
+    <nav className="fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-gray-200 safe-area-inset-bottom z-50">
+      <div className="h-full px-2 flex items-center justify-around max-w-md mx-auto">
         {navItems.map((item) => {
           const active = isActive(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`nav-item flex flex-col items-center justify-center w-11 h-11 rounded-full transition-all duration-200 ${
+              className={`nav-item flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all duration-200 ${
                 active
                   ? 'bg-primary-blue text-white'
-                  : 'text-gray-500 hover:text-primary-blue'
+                  : 'text-gray-500 hover:text-primary-blue hover:bg-gray-50'
               }`}
             >
               <div className="flex items-center justify-center">
@@ -151,4 +145,4 @@ export const MobileBottomNav: React.FC = () => {
   );
 };
 
-export default MobileBottomNav;
+export default BottomNav;

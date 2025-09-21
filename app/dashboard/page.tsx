@@ -48,15 +48,23 @@ export default function DashboardPage() {
       if (response.ok) {
         const data = await response.json();
         setStats(data);
-        
+
         // Calculate compliance percentage based on logs
         const totalLogs = data.totalLogs || 0;
         const pendingIssues = data.pendingIssues || 0;
-        const compliancePercentage = totalLogs > 0 ? Math.round(((totalLogs - pendingIssues) / totalLogs) * 100) : 100;
-        
+        const compliancePercentage =
+          totalLogs > 0
+            ? Math.round(((totalLogs - pendingIssues) / totalLogs) * 100)
+            : 100;
+
         setComplianceData({
           percentage: compliancePercentage,
-          status: compliancePercentage >= 90 ? 'compliant' : compliancePercentage >= 70 ? 'warning' : 'critical',
+          status:
+            compliancePercentage >= 90
+              ? 'compliant'
+              : compliancePercentage >= 70
+                ? 'warning'
+                : 'critical',
           trend: 'stable', // This would come from historical data
           trendValue: 0,
         });
@@ -73,25 +81,36 @@ export default function DashboardPage() {
       if (response.ok) {
         const data = await response.json();
         const actions = data.actions || [];
-        
+
         const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
-        const overdueCount = actions.filter((action: any) => 
-          new Date(action.due_date) < now && action.status !== 'completed'
+        const today = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        );
+
+        const overdueCount = actions.filter(
+          (action: any) =>
+            new Date(action.due_date) < now && action.status !== 'completed'
         ).length;
-        
+
         const dueSoonCount = actions.filter((action: any) => {
           const dueDate = new Date(action.due_date);
-          const daysUntilDue = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-          return daysUntilDue <= 3 && daysUntilDue > 0 && action.status !== 'completed';
+          const daysUntilDue = Math.ceil(
+            (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+          );
+          return (
+            daysUntilDue <= 3 &&
+            daysUntilDue > 0 &&
+            action.status !== 'completed'
+          );
         }).length;
-        
+
         const completedToday = actions.filter((action: any) => {
           const completedAt = new Date(action.completed_at);
           return completedAt >= today && action.status === 'completed';
         }).length;
-        
+
         setAlertData({
           overdueCount,
           dueSoonCount,
@@ -110,15 +129,15 @@ export default function DashboardPage() {
       if (response.ok) {
         const data = await response.json();
         const logs = data.logs?.slice(0, 5) || [];
-        
+
         // Convert logs to activity items
         const activity = logs.map((log: any) => ({
           id: log.id,
-          action: `Inspection completed at ${log.site || log.vehicle_id || 'Unknown Site'}`,
+          action: `Log completed at ${log.site || log.vehicle_id || 'Unknown Site'}`,
           timestamp: log.occurred_at,
           type: 'inspection' as const,
         }));
-        
+
         setRecentActivity(activity);
       }
     } catch (error) {
@@ -216,21 +235,15 @@ export default function DashboardPage() {
         {/* Additional Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           <div className="card p-4 text-center">
-            <p className="heading-2 text-gray-700 mb-1">
-              {stats.totalLogs}
-            </p>
+            <p className="heading-2 text-gray-700 mb-1">{stats.totalLogs}</p>
             <p className="text-sm text-gray-500">Total Inspections</p>
           </div>
           <div className="card p-4 text-center">
-            <p className="heading-2 text-gray-700 mb-1">
-              {stats.thisMonth}
-            </p>
+            <p className="heading-2 text-gray-700 mb-1">{stats.thisMonth}</p>
             <p className="text-sm text-gray-500">This Month</p>
           </div>
           <div className="card p-4 text-center">
-            <p className="heading-2 text-danger mb-1">
-              {stats.pendingIssues}
-            </p>
+            <p className="heading-2 text-danger mb-1">{stats.pendingIssues}</p>
             <p className="text-sm text-gray-500">Pending Issues</p>
           </div>
         </div>
@@ -243,8 +256,18 @@ export default function DashboardPage() {
             actionLabel="Create First Inspection"
             actionHref="/logs/new"
             icon={
-              <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              <svg
+                className="w-12 h-12 text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                />
               </svg>
             }
           />

@@ -24,16 +24,12 @@ export const createLogSchema = z.object({
     .string()
     .max(1000, 'Corrective action too long')
     .optional(),
-  customer_email: z.string().email('Invalid email format').optional(),
   compliance_mode: z.enum(['US_NFPA58', 'CA_TSSA']).optional(),
   photo_urls: z
     .array(z.string().url('Invalid photo URL'))
     .max(10, 'Too many photos')
     .optional(),
-  initials: z
-    .string()
-    .min(2, 'Initials must be at least 2 characters')
-    .max(3, 'Initials must be at most 3 characters'),
+  signature: z.string().optional(),
 });
 
 // Organization update validation

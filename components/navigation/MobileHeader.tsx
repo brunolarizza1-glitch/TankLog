@@ -28,7 +28,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
     const titleMap: Record<string, string> = {
       dashboard: 'Dashboard',
       logs: 'Inspections',
-      'logs/new': 'New Inspection',
+      'logs/new': 'New Log',
       'corrective-actions': 'Corrective Actions',
       settings: 'Settings',
       'settings/compliance': 'Compliance Settings',
@@ -73,15 +73,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
               </svg>
             </button>
           ) : (
-            <Link href="/dashboard" className="flex items-center space-x-2">
-              <Image
-                src="/logo.svg"
+            <Link href="/dashboard" className="flex items-center">
+              <img
+                src="/brand/icon-transparent.jpeg"
                 alt="TankLog"
-                width={24}
-                height={24}
-                className="h-6 w-auto"
+                className="h-12 w-auto brand-img"
               />
-              <span className="text-lg font-bold text-gray-700">TankLog</span>
             </Link>
           )}
         </div>
@@ -113,8 +110,8 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
               />
             </svg>
-            {/* Notification badge */}
-            <span className="absolute -top-1 -right-1 h-2 w-2 bg-danger rounded-full"></span>
+            {/* Notification badge - only show if there are notifications */}
+            {/* <span className="absolute -top-1 -right-1 h-2 w-2 bg-danger rounded-full"></span> */}
           </button>
 
           {/* Menu Button */}
@@ -236,7 +233,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                         d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
                       />
                     </svg>
-                    <span>Inspections</span>
+                    <span>Logs</span>
                   </Link>
                   <Link
                     href="/corrective-actions"

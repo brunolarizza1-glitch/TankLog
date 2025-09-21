@@ -7,6 +7,9 @@ ALTER TABLE logs ADD COLUMN IF NOT EXISTS vehicle_id text;
 -- Add initials column (required for all logs)
 ALTER TABLE logs ADD COLUMN IF NOT EXISTS initials text;
 
+-- Add signature column (digital signature as base64 data URL)
+ALTER TABLE logs ADD COLUMN IF NOT EXISTS signature text;
+
 -- Add photo_urls column (array of photo URLs)
 ALTER TABLE logs ADD COLUMN IF NOT EXISTS photo_urls text[] DEFAULT '{}';
 
@@ -20,6 +23,10 @@ ALTER TABLE logs ADD COLUMN IF NOT EXISTS email_message_id text;
 CREATE INDEX IF NOT EXISTS idx_logs_vehicle_id ON logs(vehicle_id);
 CREATE INDEX IF NOT EXISTS idx_logs_initials ON logs(initials);
 CREATE INDEX IF NOT EXISTS idx_logs_pdf_url ON logs(pdf_url);
+
+
+
+
 
 
 

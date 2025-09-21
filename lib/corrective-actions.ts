@@ -81,7 +81,6 @@ export interface MarkCompletedParams {
   photoEvidence?: string;
 }
 
-
 // Due date calculation based on severity
 const SEVERITY_DURATIONS: Record<SeverityLevel, number> = {
   immediate: 4, // 4 hours
@@ -185,7 +184,7 @@ export class CorrectiveActionService {
 
       // Filter by location (site) if provided
       if (locationId) {
-        query = query.eq('logs.site', locationId);
+        query = query.eq('inspection.site', locationId);
       }
 
       // Filter by technician if provided
@@ -367,7 +366,6 @@ export class CorrectiveActionService {
   }
 
   // Private helper methods
-
 
   /**
    * Calculates due date based on severity level

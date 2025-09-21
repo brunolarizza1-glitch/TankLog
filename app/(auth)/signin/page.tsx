@@ -69,19 +69,19 @@ export default function SignInPage() {
       <div className="space-y-6">
         <div className="text-center space-y-4">
           <Image
-            src="/logo-square.png"
+            src="/brand/icon-transparent.jpeg"
             alt="TankLog"
-            width={80}
-            height={80}
-            className="brand-img h-20 w-20 mx-auto"
+            width={120}
+            height={120}
+            className="brand-img h-32 w-32 mx-auto"
             style={{
-              minHeight: '80px',
-              minWidth: '80px',
+              minHeight: '120px',
+              minWidth: '120px',
               backgroundColor: 'transparent',
               background: 'transparent',
             }}
             onError={(e) => {
-              e.currentTarget.src = '/logo.png';
+              e.currentTarget.src = '/brand/icon-transparent.jpeg';
             }}
           />
           <div className="space-y-2">

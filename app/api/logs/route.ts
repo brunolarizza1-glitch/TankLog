@@ -27,8 +27,21 @@ export async function POST(request: NextRequest) {
     });
 
     // Validate request body
-    const validatedData = validateRequestBody(createLogSchema, body);
-    console.log('Validation passed:', { validatedData });
+    let validatedData;
+    try {
+      validatedData = validateRequestBody(createLogSchema, body);
+      console.log('Validation passed:', { validatedData });
+    } catch (error) {
+      console.log('Validation error:', error);
+      return NextResponse.json(
+        {
+          error: 'Request validation failed',
+          details: error instanceof Error ? error.message : 'Unknown error',
+        },
+        { status: 400 }
+      );
+    }
+
     const {
       site,
       vehicle_id,
@@ -38,10 +51,9 @@ export async function POST(request: NextRequest) {
       visual_ok,
       notes,
       corrective_action,
-      customer_email,
       compliance_mode,
       photo_urls,
-      initials,
+      signature,
     } = validatedData;
 
     // Get user profile to verify org access
@@ -83,9 +95,7 @@ export async function POST(request: NextRequest) {
       visual_ok: visual_ok,
       notes: notes || '',
       corrective_action: corrective_action || '',
-      customer_email: customer_email || '',
       photo_urls: photo_urls || [],
-      initials: initials || '',
     };
 
     const log = await db.createLog(logData);
@@ -95,6 +105,46 @@ export async function POST(request: NextRequest) {
         { error: 'Failed to create log' },
         { status: 500 }
       );
+    }
+
+    // Store signature in notes field as JSON if it exists (temporary workaround)
+    if (signature) {
+      try {
+        console.log('Storing signature in notes for log:', log.id);
+        console.log('Signature length:', signature.length);
+
+        const signatureData = {
+          type: 'signature',
+          data: signature,
+          timestamp: new Date().toISOString(),
+        };
+
+        // Update the log with signature data in notes
+        const updatedNotes = log.notes
+          ? `${log.notes}\n\n[SIGNATURE_DATA]${JSON.stringify(signatureData)}[/SIGNATURE_DATA]`
+          : `[SIGNATURE_DATA]${JSON.stringify(signatureData)}[/SIGNATURE_DATA]`;
+
+        console.log('Updated notes length:', updatedNotes.length);
+        console.log('Updated notes preview:', updatedNotes.substring(0, 200));
+
+        // Use admin client to bypass RLS policies
+        const { createAdminClient } = await import('@/lib/supabase/server');
+        const adminSupabase = createAdminClient();
+
+        const { error: updateError } = await adminSupabase
+          .from('logs')
+          .update({ notes: updatedNotes })
+          .eq('id', log.id);
+
+        if (updateError) {
+          console.log('Error updating notes with signature:', updateError);
+        } else {
+          console.log('Signature stored in notes for log:', log.id);
+        }
+      } catch (error) {
+        console.log('Error storing signature in notes:', error);
+        // Continue without failing the log creation
+      }
     }
 
     // Check for failures and create corrective actions
@@ -115,6 +165,7 @@ export async function POST(request: NextRequest) {
                 requiredAction:
                   corrective_action || 'Investigate and repair leak source',
                 assignedTo: user.id,
+                customSeverity: 'immediate' as const,
               },
             });
           createdActions.push(leakAction.id);
@@ -132,6 +183,7 @@ export async function POST(request: NextRequest) {
                 requiredAction:
                   corrective_action || 'Address visual inspection findings',
                 assignedTo: user.id,
+                customSeverity: '24hr' as const,
               },
             });
           createdActions.push(visualAction.id);

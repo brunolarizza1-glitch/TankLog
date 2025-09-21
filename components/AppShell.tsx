@@ -2,7 +2,7 @@
 
 import { memo } from 'react';
 import { useAuth } from '@/lib/auth';
-import { DesktopHeader, MobileHeader, MobileBottomNav } from './navigation';
+import { DesktopHeader, MobileHeader, BottomNav } from './navigation';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -47,14 +47,14 @@ const AppShell = memo(function AppShell({
       />
 
       {/* Main content */}
-      <main className="pb-18 md:pb-0">
+      <main className="pb-20">
         <div className="px-4 py-6 md:px-6 md:py-8">
           <div className="max-w-md mx-auto md:max-w-none">{children}</div>
         </div>
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav />
+      {/* Bottom Navigation - Now works on all screen sizes */}
+      <BottomNav />
     </div>
   );
 });
